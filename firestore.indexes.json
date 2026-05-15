@@ -1,34 +1,6 @@
 {
   "indexes": [
     {
-      "collectionGroup": "santri",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "asramaId", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "santri",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "waliId", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "santri",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "status", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "kamar",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "asramaId", "order": "ASCENDING" }
-      ]
-    },
-    {
       "collectionGroup": "kelas",
       "queryScope": "COLLECTION",
       "fields": [
