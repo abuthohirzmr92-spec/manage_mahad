@@ -1,0 +1,16 @@
+export { usersService } from './users';
+export { santriService } from './santri';
+export { asramaService } from './asrama';
+export { kamarService } from './kamar';
+export { kelasService } from './kelas';
+export { mapelService } from './mapel';
+export { masterPelanggaranService } from './masterPelanggaran';
+export { pelanggaranService } from './pelanggaran';
+export { hukumanService } from './hukuman';
+export { questService } from './quest';
+export { notificationsService } from './notifications';
+export { tolerancePolicyService } from './tolerancePolicy';
+export { teacherAssignmentService } from './teacherAssignment';
+export { masterHukumanService } from './masterHukuman';
+export { masterTingkatService } from './masterTingkat';
+export { masterJenjangService } from './masterJenjang';

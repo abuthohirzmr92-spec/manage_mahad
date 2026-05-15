@@ -9,7 +9,7 @@ import { getMenuForRole } from '@/config/navigation';
 import {
   LayoutDashboard, Users, Building2, BookOpen, AlertTriangle,
   Gavel, Trophy, Activity, Bell, Settings, ChevronLeft,
-  ChevronRight, GraduationCap, X,
+  ChevronRight, GraduationCap, X, UsersRound, School, Library,
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -17,7 +17,8 @@ import { Button } from '@/components/ui/button';
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   LayoutDashboard, Users, Building2, BookOpen, AlertTriangle,
-  Gavel, Trophy, Activity, Bell, Settings,
+  Gavel, Trophy, Activity, Bell, Settings, UsersRound,
+  GraduationCap, School, Library,
 };
 
 export function Sidebar() {
@@ -32,13 +33,14 @@ export function Sidebar() {
         <div className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
       )}
       <aside className={cn(
-        'fixed top-0 left-0 z-50 h-full bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 ease-in-out',
+        'fixed top-0 left-0 z-50 h-full flex flex-col transition-all duration-300 ease-in-out',
+        'bg-sidebar border-r border-sidebar-border dark:backdrop-blur-xl',
         isCollapsed ? 'w-[68px]' : 'w-[260px]',
         isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       )}>
         {/* Logo */}
         <div className={cn('flex items-center h-16 border-b border-sidebar-border px-4 shrink-0', isCollapsed ? 'justify-center' : 'gap-3')}>
-          <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-primary shrink-0">
+          <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-primary shrink-0 shadow-[0_0_12px_rgba(251,146,60,0.35)] dark:shadow-[0_0_16px_rgba(251,146,60,0.4)]">
             <GraduationCap className="w-5 h-5 text-primary-foreground" />
           </div>
           {!isCollapsed && (
@@ -62,7 +64,9 @@ export function Sidebar() {
                 <Link href={item.href} onClick={() => setMobileOpen(false)}
                   className={cn(
                     'group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200',
-                    isActive ? 'bg-sidebar-accent text-sidebar-accent-foreground shadow-sm' : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground',
+                    isActive
+                     ? 'bg-sidebar-accent text-sidebar-accent-foreground shadow-sm dark:shadow-[0_0_8px_rgba(251,146,60,0.08)] dark:border dark:border-primary/20'
+                     : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground',
                     isCollapsed && 'justify-center px-2'
                   )}>
                   <Icon className={cn('shrink-0 transition-colors duration-200', isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground', isCollapsed ? 'w-5 h-5' : 'w-4 h-4')} />
@@ -72,7 +76,7 @@ export function Sidebar() {
               if (isCollapsed) {
                 return (
                   <Tooltip key={item.href}>
-                    <TooltipTrigger asChild>
+                    <TooltipTrigger>
                       {linkContent}
                     </TooltipTrigger>
                     <TooltipContent side="right" sideOffset={8}>{item.title}</TooltipContent>

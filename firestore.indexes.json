@@ -1,0 +1,66 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "santri",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "asramaId", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "santri",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "waliId", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "santri",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "kamar",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "asramaId", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "kelas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "academicTab", "order": "ASCENDING" },
+        { "fieldPath": "jenjang", "order": "ASCENDING" },
+        { "fieldPath": "tingkat", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "pelanggaran",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "santriId", "order": "ASCENDING" },
+        { "fieldPath": "date", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "notifications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "targetSantriId", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "notifications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "targetRole", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

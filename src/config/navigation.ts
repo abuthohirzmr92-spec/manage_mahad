@@ -3,8 +3,10 @@ import { NavItem, UserRole } from '@/types';
 export const navigationItems: NavItem[] = [
   { title: 'Dashboard', href: '/dashboard', icon: 'LayoutDashboard', roles: ['admin', 'musyrif', 'wali', 'santri', 'staff', 'kepala_kesiswaan', 'guru', 'wali_kelas'] },
   { title: 'Data Santri', href: '/dashboard/santri', icon: 'Users', roles: ['admin', 'musyrif', 'staff', 'guru', 'wali_kelas', 'kepala_kesiswaan'] },
+  { title: 'Struktur Akademik', href: '/dashboard/struktur-akademik', icon: 'GraduationCap', roles: ['admin', 'kepala_kesiswaan'] },
   { title: 'Data Kelas', href: '/dashboard/kelas', icon: 'School', roles: ['admin', 'kepala_kesiswaan', 'staff'] },
   { title: 'Mata Pelajaran', href: '/dashboard/mapel', icon: 'Library', roles: ['admin', 'kepala_kesiswaan', 'staff'] },
+  { title: 'Distribusi Guru', href: '/dashboard/distribusi-guru', icon: 'UsersRound', roles: ['admin', 'kepala_kesiswaan', 'staff'] },
   { title: 'Asrama', href: '/dashboard/asrama', icon: 'Building2', roles: ['admin', 'musyrif', 'kepala_kesiswaan'] },
   { title: 'Master Pelanggaran', href: '/dashboard/master-pelanggaran', icon: 'BookOpen', roles: ['admin', 'kepala_kesiswaan'] },
   { title: 'Pelanggaran', href: '/dashboard/pelanggaran', icon: 'AlertTriangle', roles: ['admin', 'musyrif', 'staff', 'kepala_kesiswaan', 'guru', 'wali_kelas'] },

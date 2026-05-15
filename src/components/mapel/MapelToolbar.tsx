@@ -4,13 +4,14 @@ import { Button } from '@/components/ui/button';
 interface Props {
   viewMode: 'grid' | 'list';
   onViewModeChange: (mode: 'grid' | 'list') => void;
+  onCreate: () => void;
 }
 
-export function MapelToolbar({ viewMode, onViewModeChange }: Props) {
+export function MapelToolbar({ viewMode, onViewModeChange, onCreate }: Props) {
   return (
     <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
       <div className="flex bg-muted p-1 rounded-lg border border-border shrink-0">
-        <button 
+        <button
           onClick={() => onViewModeChange('grid')}
           title="Tampilan Grid"
           className={`p-1.5 rounded-md transition-all ${
@@ -19,7 +20,7 @@ export function MapelToolbar({ viewMode, onViewModeChange }: Props) {
         >
           <LayoutGrid className="w-4 h-4" />
         </button>
-        <button 
+        <button
           onClick={() => onViewModeChange('list')}
           title="Tampilan List"
           className={`p-1.5 rounded-md transition-all ${
@@ -29,7 +30,7 @@ export function MapelToolbar({ viewMode, onViewModeChange }: Props) {
           <List className="w-4 h-4" />
         </button>
       </div>
-      <Button className="gap-2 flex-1 sm:flex-none">
+      <Button className="gap-2 flex-1 sm:flex-none" onClick={onCreate}>
         <Plus className="w-4 h-4 shrink-0" /> <span className="hidden sm:inline">Tambah Mapel</span><span className="sm:hidden">Tambah</span>
       </Button>
     </div>

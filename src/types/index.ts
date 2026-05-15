@@ -2,7 +2,7 @@
 // Core Types for Ma'had Management System
 // ========================================
 
-export type UserRole = 'admin' | 'musyrif' | 'wali' | 'santri' | 'staff' | 'kepala_kesiswaan' | 'guru' | 'wali_kelas';
+export type UserRole = 'admin' | 'musyrif' | 'wali' | 'santri' | 'staff' | 'kepala_kesiswaan' | 'guru' | 'wali_kelas' | 'alumni';
 
 export type SantriStatus = 'aktif' | 'cuti' | 'skors';
 export type AlumniStatus = 'Lulus' | 'Keluar';
@@ -36,8 +36,14 @@ export interface Santri {
   id: string;
   nis: string;
   name: string;
+  /** @deprecated prefer asramaId — kept for display compatibility */
   asrama: string;
+  /** @deprecated prefer kamarId — kept for display compatibility */
   kamar: string;
+  /** Relational ID referencing Asrama.id */
+  asramaId?: string;
+  /** Relational ID referencing Kamar.id */
+  kamarId?: string;
   kelas: string;
   status: SantriStatus;
   gender: 'L' | 'P';
@@ -65,6 +71,13 @@ export interface Asrama {
   status: 'aktif' | 'nonaktif';
 }
 
+export interface Kamar {
+  id: string;
+  asramaId: string;
+  name: string;
+  capacity: number;
+}
+
 export interface Alumni {
   id: string;
   nis: string;
@@ -81,13 +94,72 @@ export interface Alumni {
   masihMemilikiAkun: boolean;
 }
 
+export type RanahInstansi = 'madin' | 'depag' | 'madqurur' | 'pesantren';
+export type PelanggaranSeverity = 'ringan' | 'sedang' | 'berat' | 'sangat_berat';
+
+export const ALL_SEVERITIES: PelanggaranSeverity[] = ['ringan', 'sedang', 'berat', 'sangat_berat'];
+
+export interface SeverityLimits {
+  ringan: number;
+  sedang: number;
+  berat: number;
+  sangat_berat: number;
+}
+
+export const DEFAULT_SEVERITY_LIMITS: SeverityLimits = {
+  ringan: 3,
+  sedang: 2,
+  berat: 1,
+  sangat_berat: 0,
+};
+
+export interface GlobalTolerancePolicy {
+  id: 'global';
+  type: 'global';
+  isActive: boolean;
+  limits: SeverityLimits;
+}
+
+export interface JenjangToleranceOverride {
+  id: string;
+  type: 'jenjang';
+  jenjang: string;
+  isActive: boolean;
+  limits: SeverityLimits;
+}
+
+export type TolerancePolicy = GlobalTolerancePolicy | JenjangToleranceOverride;
+
+export interface TeacherAssignment {
+  id: string;
+  mapelId: string;
+  kelasId: string;
+  kelasName: string;
+  guruName: string;
+  status: 'active' | 'inactive';
+}
+
+export interface MasterHukuman {
+  id: string;
+  name: string;
+  status: 'active' | 'inactive';
+  severityScope: PelanggaranSeverity[];
+  minimumTingkat: number;
+  description?: string;
+}
+
 export interface MasterPelanggaran {
   id: string;
   code: string;
+  /** Instansi pembuat aturan: Madin, Depag, Madqurur, Pesantren */
+  ranahInstansi: RanahInstansi;
+  /** Ruang lingkup pelanggaran, free-text: Kelas, Asrama, Ibadah, dst. */
+  kategori: string;
   name: string;
-  category: 'ringan' | 'sedang' | 'berat';
+  /** Tingkat keseriusan pelanggaran */
+  severity: PelanggaranSeverity;
   points: number;
-  description: string;
+  description?: string;
 }
 
 export interface Pelanggaran {
@@ -96,12 +168,16 @@ export interface Pelanggaran {
   santriName: string;
   pelanggaranId: string;
   pelanggaranName: string;
-  category: 'ringan' | 'sedang' | 'berat';
+  severity: PelanggaranSeverity;
   points: number;
   date: string;
   reportedBy: string;
+  reportedByUserId?: string;
+  reportedByRole?: UserRole;
   status: 'pending' | 'confirmed' | 'rejected';
   statusHukuman: 'belum' | 'aktif' | 'selesai';
+  punishmentId?: string;
+  punishmentName?: string;
   notes?: string;
 }
 
@@ -144,6 +220,38 @@ export interface Notification {
   targetAsramaId?: string;
   targetKelas?: string;
   targetAngkatan?: number;
+}
+
+export type Instansi = 'madin' | 'madqur' | 'depag';
+
+/** Canonical instansi order — Madin first (core pesantren curriculum flow). */
+export const INSTANSI_ORDER: Instansi[] = ['madin', 'madqur', 'depag'];
+
+export const INSTANSI_LABEL: Record<Instansi, string> = {
+  madin: 'Madin',
+  madqur: 'Madqur',
+  depag: 'Depag',
+};
+
+// ── Master Struktur Akademik ──────────────────────────────────────────────
+
+/** A single progression step in the academic hierarchy. System key = progressionIndex. */
+export interface MasterTingkat {
+  id: string;
+  instansi: Instansi;
+  progressionIndex: number;
+  tingkatLabel: string;
+  jenjangId: string;
+  status: 'active' | 'inactive';
+}
+
+/** A jenjang groups multiple progression steps under one instansi. */
+export interface MasterJenjang {
+  id: string;
+  namaJenjang: string;
+  instansi: Instansi;
+  progressionIndexes: number[];
+  status: 'active' | 'inactive';
 }
 
 export interface DataTableColumn<T> {

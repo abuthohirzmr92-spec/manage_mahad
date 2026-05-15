@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { PageHeader, PageCard } from '@/components/shared/page-header';
 import { StatusBadge } from '@/components/shared/status-badge';
-import { currentUser } from '@/data/mock';
+import { useAuth } from '@/hooks';
 import { 
   User, Lock, Bell, Palette, Info, LogOut, 
   Save, RotateCcw, Mail, Smartphone, Globe, 
@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 
 export default function PengaturanPage() {
+  const { user } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
   const [notifSettings, setNotifSettings] = useState({
     email: true,
@@ -74,7 +75,7 @@ export default function PengaturanPage() {
           <div className="flex flex-col sm:flex-row gap-6 items-start">
             <div className="flex flex-col items-center gap-3">
               <div className="w-24 h-24 rounded-full bg-primary/10 border-4 border-background shadow-md flex items-center justify-center text-3xl font-bold text-primary">
-                {currentUser.name.split(' ').map(n => n[0]).slice(0, 2).join('')}
+                {user?.name || '-'.split(' ').map(n => n[0]).slice(0, 2).join('')}
               </div>
               <button className="text-xs font-semibold text-primary hover:underline">Ubah Foto</button>
             </div>
@@ -84,21 +85,21 @@ export default function PengaturanPage() {
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Nama Lengkap</label>
                 <div className="flex items-center gap-3 px-3 py-2 bg-muted/50 rounded-lg border border-border/50">
                   <User className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">{currentUser.name}</span>
+                  <span className="text-sm font-medium">{user?.name || '-'}</span>
                 </div>
               </div>
               <div className="space-y-1">
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Email Address</label>
                 <div className="flex items-center gap-3 px-3 py-2 bg-muted/50 rounded-lg border border-border/50">
                   <Mail className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">{currentUser.email}</span>
+                  <span className="text-sm font-medium">{user?.email || '-'}</span>
                 </div>
               </div>
               <div className="space-y-1">
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Role / Hak Akses</label>
                 <div className="flex items-center gap-3 px-3 py-2 bg-muted/50 rounded-lg border border-border/50">
                   <Shield className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-bold text-primary capitalize">{currentUser.role}</span>
+                  <span className="text-sm font-bold text-primary capitalize">{user?.role || ''}</span>
                 </div>
               </div>
               <button className="w-full py-2.5 mt-2 bg-background border border-border rounded-lg text-sm font-semibold hover:bg-muted transition-colors shadow-sm">

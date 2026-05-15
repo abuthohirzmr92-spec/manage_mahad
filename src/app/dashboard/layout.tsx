@@ -10,15 +10,15 @@ import { Breadcrumb } from '@/components/layout/breadcrumb';
 import { cn } from '@/lib/utils';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated, user, isLoading } = useAuthStore();
   const { isCollapsed } = useSidebarStore();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isAuthenticated || !user) router.push('/');
-  }, [isAuthenticated, user, router]);
+    if (!isLoading && (!isAuthenticated || !user)) router.push('/');
+  }, [isAuthenticated, user, isLoading, router]);
 
-  if (!isAuthenticated || !user) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">
@@ -27,6 +27,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </div>
     );
+  }
+
+  if (!isAuthenticated || !user) {
+    return null;
   }
 
   return (

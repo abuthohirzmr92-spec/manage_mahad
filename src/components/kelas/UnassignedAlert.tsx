@@ -1,22 +1,22 @@
 import { AlertTriangle, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { AcademicTab } from '@/data/mock-kelas';
+import type { Instansi } from '@/types';
+import { INSTANSI_LABEL } from '@/types';
 
 interface UnassignedAlertProps {
   unassignedCount: number;
   assignedCount: number;
   totalSantri: number;
-  activeTab: AcademicTab;
+  activeInstansi: Instansi;
   onAssignClick: () => void;
 }
 
-export function UnassignedAlert({ unassignedCount, assignedCount, totalSantri, activeTab, onAssignClick }: UnassignedAlertProps) {
-  const tabLabel = activeTab === 'formal' ? 'Formal' : activeTab === 'diniyah' ? 'Diniyah' : "Qur'an";
+export function UnassignedAlert({ unassignedCount, assignedCount, totalSantri, activeInstansi, onAssignClick }: UnassignedAlertProps) {
+  const tabLabel = INSTANSI_LABEL[activeInstansi];
 
   if (unassignedCount > 0) {
-    // Requires tailwindcss-animate plugin
     return (
-      <div 
+      <div
         className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl animate-in fade-in slide-in-from-top-2"
         role="alert"
       >
@@ -33,9 +33,9 @@ export function UnassignedAlert({ unassignedCount, assignedCount, totalSantri, a
             </p>
           </div>
         </div>
-        <Button 
+        <Button
           type="button"
-          variant="outline" 
+          variant="outline"
           onClick={onAssignClick}
           className="shrink-0 border-amber-500/30 text-amber-700 hover:bg-amber-500/20 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-300 transition-colors"
         >
@@ -45,9 +45,8 @@ export function UnassignedAlert({ unassignedCount, assignedCount, totalSantri, a
     );
   }
 
-  // Requires tailwindcss-animate plugin
   return (
-    <div 
+    <div
       className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl animate-in fade-in slide-in-from-top-2"
       role="status"
     >

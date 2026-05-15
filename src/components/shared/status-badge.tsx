@@ -3,7 +3,7 @@
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
-type StatusVariant = 'success' | 'warning' | 'error' | 'info' | 'neutral' | 'purple';
+type StatusVariant = 'success' | 'warning' | 'error' | 'info' | 'neutral' | 'purple' | 'fatal';
 
 interface StatusBadgeProps {
   status: string;
@@ -18,15 +18,17 @@ const variantStyles: Record<StatusVariant, string> = {
   info: 'bg-blue-500/10 text-blue-700 border-blue-500/20 dark:text-blue-400 dark:border-blue-500/30',
   neutral: 'bg-zinc-500/10 text-zinc-700 border-zinc-500/20 dark:text-zinc-400 dark:border-zinc-500/30',
   purple: 'bg-purple-500/10 text-purple-700 border-purple-500/20 dark:text-purple-400 dark:border-purple-500/30',
+  fatal: 'bg-rose-500/15 text-rose-800 border-rose-500/30 dark:bg-rose-500/20 dark:text-rose-300 dark:border-rose-500/40 font-bold',
 };
 
 const dotStyles: Record<StatusVariant, string> = {
   success: 'bg-emerald-500', warning: 'bg-amber-500', error: 'bg-red-500',
-  info: 'bg-blue-500', neutral: 'bg-zinc-500', purple: 'bg-purple-500',
+  info: 'bg-blue-500', neutral: 'bg-zinc-500', purple: 'bg-purple-500', fatal: 'bg-rose-600',
 };
 
 function detectVariant(status: string): StatusVariant {
   const lower = status.toLowerCase();
+  if (['sangat_berat'].includes(lower)) return 'fatal';
   if (['aktif', 'active', 'selesai', 'completed', 'confirmed', 'available', 'baik', 'success'].includes(lower)) return 'success';
   if (['pending', 'cuti', 'in_progress', 'warning', 'perlu perhatian'].includes(lower)) return 'warning';
   if (['nonaktif', 'inactive', 'berat', 'rejected', 'dibatalkan', 'expired', 'error', 'peringatan'].includes(lower)) return 'error';

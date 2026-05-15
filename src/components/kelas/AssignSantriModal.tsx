@@ -1,23 +1,25 @@
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { AcademicTab, GroupedKelas } from '@/data/mock-kelas';
+import { TingkatGroup } from '@/data/mock-kelas';
+import type { Instansi } from '@/types';
+import { INSTANSI_LABEL } from '@/types';
 
 interface AssignSantriModalProps {
   isOpen: boolean;
   onClose: () => void;
-  activeTab: AcademicTab;
+  activeInstansi: Instansi;
   unassignedCount: number;
-  groupedData: GroupedKelas[];
+  groupedData: TingkatGroup[];
 }
 
-export function AssignSantriModal({ isOpen, onClose, activeTab, unassignedCount, groupedData }: AssignSantriModalProps) {
+export function AssignSantriModal({ isOpen, onClose, activeInstansi, unassignedCount, groupedData }: AssignSantriModalProps) {
   if (!isOpen) return null;
 
-  const tabLabel = activeTab === 'formal' ? 'Formal' : activeTab === 'diniyah' ? 'Diniyah' : "Qur'an";
+  const tabLabel = INSTANSI_LABEL[activeInstansi];
   const selectClass = "w-full px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors";
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
@@ -29,7 +31,7 @@ export function AssignSantriModal({ isOpen, onClose, activeTab, unassignedCount,
             <h2 id="assign-santri-modal-title" className="text-lg font-bold text-foreground">Plotting Santri Belum Terplotting</h2>
             <p className="text-xs text-muted-foreground mt-1">Simulasi alur distribusi santri ke dalam kelas {tabLabel}.</p>
           </div>
-          <button 
+          <button
             type="button"
             onClick={onClose}
             className="p-2 hover:bg-muted rounded-full text-muted-foreground transition-colors"
@@ -38,7 +40,7 @@ export function AssignSantriModal({ isOpen, onClose, activeTab, unassignedCount,
             <X className="w-5 h-5" aria-hidden="true" />
           </button>
         </div>
-        
+
         <div className="p-5 space-y-6">
           <div className="space-y-3">
             <label className="text-sm font-semibold text-foreground">Daftar Santri (Dummy)</label>
@@ -63,13 +65,15 @@ export function AssignSantriModal({ isOpen, onClose, activeTab, unassignedCount,
 
           <div className="space-y-1.5">
             <label htmlFor="kelas-tujuan" className="text-sm font-semibold text-foreground">Pilih Kelas Tujuan</label>
-            <select 
-              id="kelas-tujuan" 
+            <select
+              id="kelas-tujuan"
               className={selectClass}
             >
               <option value="">-- Pilih Kelas --</option>
               {groupedData.flatMap(g => g.classes).map((c) => (
-                <option key={c.id} value={c.id}>{c.name} ({c.studentCount} santri saat ini)</option>
+                <option key={c.id} value={c.id}>
+                  [{c.jenjang} Tkt.{c.tingkat}] {c.name}
+                </option>
               ))}
             </select>
           </div>

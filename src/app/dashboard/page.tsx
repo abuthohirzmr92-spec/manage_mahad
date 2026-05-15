@@ -1,14 +1,15 @@
 'use client';
 
-import { useAuthStore } from '@/store/auth-store';
+import { useMemo } from 'react';
+import { useAuth } from '@/hooks';
+import { useCollection } from '@/hooks';
 import { StatsCard } from '@/components/shared/stats-card';
 import { PageHeader, PageCard } from '@/components/shared/page-header';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { AnalyticsCard } from '@/components/shared/analytics-card';
-import {
-  dashboardStats, mockSantri, mockAsrama, mockPelanggaran, mockHukuman, mockQuest,
-  getChildSantri, getChildPelanggaran, getChildHukuman, getChildQuest,
-} from '@/data/mock';
+import { LoadingState } from '@/components/shared/loading-state';
+import { ErrorState } from '@/components/shared/error-state';
+import type { Santri, Pelanggaran, Quest, Hukuman, Asrama } from '@/types';
 import {
   Users, Building2, AlertTriangle, Trophy, Shield,
   Activity, GraduationCap, Star, Clock, CheckCircle,
@@ -17,6 +18,26 @@ import {
 
 // ─── ADMIN VIEW ────────────────────────────────────────────────
 function AdminDashboard() {
+  const { data: santri, loading: loadingSantri, error: errorSantri } = useCollection<Santri>('santri');
+  const { data: pelanggaran, loading: loadingPelanggaran, error: errorPelanggaran } = useCollection<Pelanggaran>('pelanggaran');
+  const { data: quest, loading: loadingQuest, error: errorQuest } = useCollection<Quest>('quest');
+  const { data: asrama, loading: loadingAsrama, error: errorAsrama } = useCollection<Asrama>('asrama');
+  const { data: hukuman, loading: loadingHukuman } = useCollection<Hukuman>('hukuman');
+
+  const loading = loadingSantri || loadingPelanggaran || loadingQuest || loadingAsrama || loadingHukuman;
+  const error = errorSantri || errorPelanggaran || errorQuest || errorAsrama;
+
+  const stats = useMemo(() => ({
+    totalSantri: santri.length,
+    santriAktif: santri.filter(s => s.status === 'aktif').length,
+    pelanggaranBulanIni: pelanggaran.length,
+    questAktif: quest.filter(q => q.status === 'inProgress').length,
+    asramaAktif: asrama.filter(a => a.status === 'aktif').length,
+    hukumanAktif: hukuman.filter(h => h.status === 'aktif').length,
+    pelanggaranMingguIni: pelanggaran.filter(p => p.status === 'pending').length,
+    questSelesai: quest.filter(q => q.status === 'completed').length,
+  }), [santri, pelanggaran, quest, asrama, hukuman]);
+
   const recentActivity = [
     { text: 'Ahmad Fauzi mendapat quest baru', type: 'success' as const },
     { text: 'Bilal Ramadhan menyelesaikan hafalan', type: 'success' as const },
@@ -45,14 +66,32 @@ function AdminDashboard() {
     { label: 'Berat', value: 10, color: 'bg-red-600' },
   ];
 
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <PageHeader title="Dashboard MA'HAD" description="Statistik global pesantren" />
+        <LoadingState type="stats" count={4} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <PageHeader title="Dashboard MA'HAD" description="Statistik global pesantren" />
+        <ErrorState message={error.message} />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <PageHeader title="Dashboard MA'HAD" description="Statistik global pesantren" />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard title="Total Santri" value={dashboardStats.totalSantri} icon={Users} trend={{ value: 3, label: 'bulan ini' }} />
-        <StatsCard title="Santri Aktif" value={dashboardStats.santriAktif} icon={GraduationCap} iconClassName="bg-emerald-500/10" />
-        <StatsCard title="Pelanggaran Bln Ini" value={dashboardStats.pelanggaranBulanIni} icon={AlertTriangle} iconClassName="bg-red-500/10" />
-        <StatsCard title="Quest Aktif" value={dashboardStats.questAktif} icon={Trophy} iconClassName="bg-amber-500/10" />
+        <StatsCard title="Total Santri" value={stats.totalSantri} icon={Users} trend={{ value: 3, label: 'bulan ini' }} />
+        <StatsCard title="Santri Aktif" value={stats.santriAktif} icon={GraduationCap} iconClassName="bg-emerald-500/10" />
+        <StatsCard title="Pelanggaran Bln Ini" value={stats.pelanggaranBulanIni} icon={AlertTriangle} iconClassName="bg-red-500/10" />
+        <StatsCard title="Quest Aktif" value={stats.questAktif} icon={Trophy} iconClassName="bg-amber-500/10" />
       </div>
 
       {/* Analytics Section */}
@@ -74,10 +113,10 @@ function AdminDashboard() {
           </div>
         </PageCard>
         <div className="grid grid-cols-2 gap-4">
-          <StatsCard title="Asrama Aktif" value={dashboardStats.asramaAktif} icon={Building2} iconClassName="bg-blue-500/10" />
-          <StatsCard title="Hukuman Aktif" value={dashboardStats.hukumanAktif} icon={Shield} iconClassName="bg-orange-500/10" />
-          <StatsCard title="Pelanggaran Minggu Ini" value={dashboardStats.pelanggaranMingguIni} icon={Activity} iconClassName="bg-purple-500/10" />
-          <StatsCard title="Quest Selesai" value={dashboardStats.questSelesai} icon={CheckCircle} iconClassName="bg-emerald-500/10" />
+          <StatsCard title="Asrama Aktif" value={stats.asramaAktif} icon={Building2} iconClassName="bg-blue-500/10" />
+          <StatsCard title="Hukuman Aktif" value={stats.hukumanAktif} icon={Shield} iconClassName="bg-orange-500/10" />
+          <StatsCard title="Pelanggaran Minggu Ini" value={stats.pelanggaranMingguIni} icon={Activity} iconClassName="bg-purple-500/10" />
+          <StatsCard title="Quest Selesai" value={stats.questSelesai} icon={CheckCircle} iconClassName="bg-emerald-500/10" />
         </div>
       </div>
     </div>
@@ -86,9 +125,15 @@ function AdminDashboard() {
 
 // ─── MUSYRIF VIEW ───────────────────────────────────────────────
 function MusyrifDashboard({ name }: { name: string }) {
-  const asrama = mockAsrama.find((a) => a.musyrif === name);
-  const santriAsrama = asrama ? mockSantri.filter((s) => s.asrama === asrama.name) : [];
-  const pelanggaranAsrama = mockPelanggaran.filter((p) =>
+  const { data: asramaList, loading: loadingAsrama } = useCollection<Asrama>('asrama');
+  const { data: santriList, loading: loadingSantri } = useCollection<Santri>('santri');
+  const { data: pelanggaranList, loading: loadingPelanggaran } = useCollection<Pelanggaran>('pelanggaran');
+
+  const loading = loadingAsrama || loadingSantri || loadingPelanggaran;
+
+  const asrama = asramaList.find((a) => a.musyrif === name);
+  const santriAsrama = asrama ? santriList.filter((s) => s.asrama === asrama.name) : [];
+  const pelanggaranAsrama = pelanggaranList.filter((p) =>
     santriAsrama.some((s) => s.id === p.santriId)
   );
 
@@ -103,6 +148,15 @@ function MusyrifDashboard({ name }: { name: string }) {
     { label: 'Selesai', value: 25, color: 'bg-emerald-500' },
     { label: 'Kadaluarsa', value: 3, color: 'bg-slate-500' },
   ];
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <PageHeader title={`Asrama ${asrama?.name ?? 'Anda'}`} description="Monitoring santri asrama yang kamu pegang" />
+        <LoadingState type="stats" count={4} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -154,11 +208,20 @@ function MusyrifDashboard({ name }: { name: string }) {
 
 // ─── WALI VIEW ──────────────────────────────────────────────────
 function WaliDashboard({ userId }: { userId: string }) {
-  const anak = getChildSantri(userId);
+  const fbUser = useAuth().user;
+  const { data: santriList, loading: loadingSantri } = useCollection<Santri>('santri');
+  const { data: questList, loading: loadingQuest } = useCollection<Quest>('quest');
+
+  const childSantriId = fbUser?.childSantriId;
+  const anak = santriList.find(s => s.id === childSantriId);
+  const quests = questList.filter(q => q.santriId === anak?.id);
+
+  if (loadingSantri || loadingQuest) {
+    return <LoadingState type="spinner" text="Memuat data anak..." />;
+  }
+
   if (!anak) return <div className="p-8 text-center text-muted-foreground">Data anak tidak ditemukan.</div>;
 
-  const quests = getChildQuest(anak.id);
-  
   const waliChartKarakter = [
     { label: 'Kedisiplinan', value: 85, color: 'bg-emerald-500' },
     { label: 'Ibadah', value: 90, color: 'bg-blue-500' },
@@ -175,12 +238,12 @@ function WaliDashboard({ userId }: { userId: string }) {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={`Assalamu'alaikum 👋`} description={`Pantau perkembangan ${anak.name}`} />
+      <PageHeader title={`Assalamu'alaikum \u{1F44B}`} description={`Pantau perkembangan ${anak.name}`} />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard title="Poin Pelanggaran" value={anak.totalPoinPelanggaran} icon={AlertTriangle} iconClassName="bg-red-500/10" />
         <StatsCard title="Hukuman Aktif" value={1} icon={Shield} iconClassName="bg-orange-500/10" />
-        <StatsCard title="Quest Aktif" value={quests.filter(q=>q.status==='in_progress').length} icon={Trophy} iconClassName="bg-amber-500/10" />
+        <StatsCard title="Quest Aktif" value={quests.filter(q=>q.status==='inProgress').length} icon={Trophy} iconClassName="bg-amber-500/10" />
         <StatsCard title="Quest Selesai" value={quests.filter(q=>q.status==='completed').length} icon={CheckCircle} iconClassName="bg-emerald-500/10" />
       </div>
 
@@ -194,7 +257,11 @@ function WaliDashboard({ userId }: { userId: string }) {
 
 // ─── SANTRI VIEW ────────────────────────────────────────────────
 function SantriDashboard({ name }: { name: string }) {
-  const santri = mockSantri.find((s) => s.name.toLowerCase().includes(name.split(' ')[0].toLowerCase()));
+  const { data: santriList, loading } = useCollection<Santri>('santri');
+
+  if (loading) return <LoadingState type="spinner" text="Memuat data santri..." />;
+
+  const santri = santriList.find((s) => s.name.toLowerCase().includes(name.split(' ')[0].toLowerCase()));
   if (!santri) return <div className="p-8 text-center text-muted-foreground">Data tidak ditemukan.</div>;
 
   const santriChartProgress = [
@@ -212,7 +279,7 @@ function SantriDashboard({ name }: { name: string }) {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={`Halo, ${santri.name.split(' ')[0]} 👋`} description="Dashboard pribadi santri" />
+      <PageHeader title={`Halo, ${santri.name.split(' ')[0]} \u{1F44B}`} description="Dashboard pribadi santri" />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard title="Poin Pelanggaran" value={santri.totalPoinPelanggaran} icon={AlertTriangle} iconClassName="bg-red-500/10" />
@@ -319,7 +386,7 @@ function StaffDashboard() {
 
 // ─── MAIN EXPORT ────────────────────────────────────────────────
 export default function DashboardPage() {
-  const { user } = useAuthStore();
+  const { user } = useAuth();
 
   if (!user) return null;
 

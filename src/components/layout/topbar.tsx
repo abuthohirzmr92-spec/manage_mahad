@@ -9,17 +9,19 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
   DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuSub,
-  DropdownMenuSubContent, DropdownMenuSubTrigger,
+  DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuGroup,
 } from '@/components/ui/dropdown-menu';
 import { Bell, Menu, Moon, Sun, LogOut, User, Shield, ChevronDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { mockNotifications, getChildNotifications } from '@/data/mock';
+import { useCollection } from '@/hooks';
+import type { Notification } from '@/types';
+import { mockNotifications } from '@/data/mock';
 import { cn } from '@/lib/utils';
 
-const roleLabels: Record<UserRole, string> = { 
-  admin: 'Administrator', 
-  musyrif: 'Musyrif', 
-  wali: 'Wali Santri', 
+const roleLabels: Record<UserRole, string> = {
+  admin: 'Administrator',
+  musyrif: 'Musyrif',
+  wali: 'Wali Santri',
   santri: 'Santri',
   guru: 'Guru',
   staff: 'Staff',
@@ -44,16 +46,21 @@ export function Topbar() {
   const { setMobileOpen } = useSidebarStore();
   const { theme, setTheme } = useTheme();
 
+  // Load notifications from Firebase, fall back to mock data in demo mode
+  const isDemo = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
+  const { data: fbNotifications } = useCollection<Notification>('notifications', [], { realtime: true });
+  const rawNotifications = isDemo ? mockNotifications : fbNotifications;
+
   // Wali only sees their child's notifications
   const notifications = user?.role === 'wali' && user.childSantriId
-    ? getChildNotifications(user.childSantriId)
-    : mockNotifications;
+    ? rawNotifications.filter((n) => n.targetSantriId === user.childSantriId)
+    : rawNotifications;
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const initials = user?.name?.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() || 'AD';
 
   return (
-    <header className="sticky top-0 z-30 flex items-center h-16 border-b border-border bg-background/80 backdrop-blur-xl px-4 lg:px-6">
+    <header className="sticky top-0 z-30 flex items-center h-16 border-b border-border dark:border-white/[0.07] bg-background/80 dark:bg-black/30 backdrop-blur-xl px-4 lg:px-6">
       <Button variant="ghost" size="icon" className="lg:hidden mr-2" onClick={() => setMobileOpen(true)}>
         <Menu className="w-5 h-5" />
       </Button>
@@ -78,20 +85,26 @@ export function Topbar() {
             )}
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-80">
-            <DropdownMenuLabel className="flex items-center justify-between">
-              Notifikasi
-              {unreadCount > 0 && <Badge variant="secondary" className="text-[10px]">{unreadCount} baru</Badge>}
-            </DropdownMenuLabel>
+            <DropdownMenuGroup>
+              <DropdownMenuLabel className="flex items-center justify-between">
+                Notifikasi
+                {unreadCount > 0 && <Badge variant="secondary" className="text-[10px]">{unreadCount} baru</Badge>}
+              </DropdownMenuLabel>
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            {notifications.slice(0, 4).map((notif) => (
-              <DropdownMenuItem key={notif.id} className="flex flex-col items-start gap-1 py-3 cursor-pointer">
-                <div className="flex items-center gap-2">
-                  {!notif.read && <span className="w-2 h-2 rounded-full bg-primary shrink-0" />}
-                  <span className={cn('text-sm font-medium', notif.read && 'text-muted-foreground')}>{notif.title}</span>
-                </div>
-                <span className="text-xs text-muted-foreground line-clamp-1 pl-4">{notif.message}</span>
-              </DropdownMenuItem>
-            ))}
+            <DropdownMenuGroup>
+              {notifications.slice(0, 5).map((notif) => (
+                <DropdownMenuItem key={notif.id} className="cursor-pointer py-0">
+                  <div className="flex flex-col gap-1 py-3 w-full">
+                    <div className="flex items-center gap-2">
+                      {!notif.read && <span className="w-2 h-2 rounded-full bg-primary shrink-0" />}
+                      <span className={cn('text-sm font-medium', notif.read && 'text-muted-foreground')}>{notif.title}</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground line-clamp-1 pl-4">{notif.message}</span>
+                  </div>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
 
@@ -105,24 +118,30 @@ export function Topbar() {
             <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>
-              <div className="flex flex-col"><span>{user?.name}</span><span className="text-xs font-normal text-muted-foreground">{user?.email}</span></div>
-            </DropdownMenuLabel>
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>
+                <div className="flex flex-col"><span>{user?.name}</span><span className="text-xs font-normal text-muted-foreground">{user?.email}</span></div>
+              </DropdownMenuLabel>
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer"><User className="w-4 h-4 mr-2" />Profil</DropdownMenuItem>
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger><Shield className="w-4 h-4 mr-2" />Switch Role (Demo)</DropdownMenuSubTrigger>
-              <DropdownMenuSubContent>
-                {(['admin', 'kepala_kesiswaan', 'musyrif', 'wali_kelas', 'guru', 'staff', 'wali', 'santri', 'alumni'] as UserRole[]).map((role) => (
-                  <DropdownMenuItem key={role} onClick={() => switchRole(role)} className="cursor-pointer">
-                    <Badge variant="outline" className={cn('text-xs mr-2', roleColors[role])}>{roleLabels[role]}</Badge>
-                    {user?.role === role && <span className="ml-auto text-xs text-primary">✓</span>}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuSubContent>
-            </DropdownMenuSub>
+            <DropdownMenuGroup>
+              <DropdownMenuItem className="cursor-pointer"><User className="w-4 h-4 mr-2" />Profil</DropdownMenuItem>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger><Shield className="w-4 h-4 mr-2" />Switch Role (Demo)</DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  {(['admin', 'kepala_kesiswaan', 'musyrif', 'wali_kelas', 'guru', 'staff', 'wali', 'santri', 'alumni'] as UserRole[]).map((role) => (
+                    <DropdownMenuItem key={role} onClick={() => switchRole(role)} className="cursor-pointer">
+                      <Badge variant="outline" className={cn('text-xs mr-2', roleColors[role])}>{roleLabels[role]}</Badge>
+                      {user?.role === role && <span className="ml-auto text-xs text-primary">✓</span>}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={logout} className="text-destructive cursor-pointer"><LogOut className="w-4 h-4 mr-2" />Keluar</DropdownMenuItem>
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={logout} className="text-destructive cursor-pointer"><LogOut className="w-4 h-4 mr-2" />Keluar</DropdownMenuItem>
+            </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

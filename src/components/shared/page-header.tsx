@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface PageHeaderProps {
-    title: string;
+    title: ReactNode;
     description?: string;
     action?: ReactNode;
     className?: string;
@@ -21,7 +21,7 @@ export function PageHeader({ title, description, action, className }: PageHeader
 }
 
 interface PageCardProps {
-    title: string;
+    title: ReactNode;
     description?: string;
     children: ReactNode;
     className?: string;

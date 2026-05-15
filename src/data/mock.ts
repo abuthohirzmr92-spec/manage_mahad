@@ -1,4 +1,4 @@
-import { User, Santri, Alumni, Asrama, MasterPelanggaran, Pelanggaran, Hukuman, Quest, Notification } from '@/types';
+import { User, Santri, Alumni, Asrama, Kamar, MasterPelanggaran, Pelanggaran, Hukuman, Quest, Notification } from '@/types';
 
 // ========================================
 // Mock Users — wali user linked to santri ID '1'
@@ -33,73 +33,95 @@ export const currentUser: User = mockUsers[0];
 export const mockSantri: Santri[] = [
   {
     id: '1', nis: '2024001', name: 'Muhammad Rizki Aditya', asrama: 'Al-Fatih',
-    kamar: 'A-101', kelas: '10A', status: 'aktif', gender: 'L',
+    kamar: 'A-101', asramaId: '1', kamarId: 'k1', kelas: '10A', status: 'aktif', gender: 'L',
     waliId: '3', waliName: 'Bapak Ridwan', waliPhone: '081234567890', joinDate: '2024-07-15',
     asalKota: 'Bandung', asalProvinsi: 'Jawa Barat', angkatanMasuk: 2024,
     totalPoinPelanggaran: 15, totalPrestasi: 80, statusKarakter: 'Baik', statusSP: 'Tidak Ada',
   },
   {
     id: '2', nis: '2024002', name: 'Abdullah Firdaus', asrama: 'Al-Fatih',
-    kamar: 'A-102', kelas: '10A', status: 'aktif', gender: 'L',
+    kamar: 'A-102', asramaId: '1', kamarId: 'k2', kelas: '10A', status: 'aktif', gender: 'L',
     waliId: 'w2', waliName: 'Bapak Surya', waliPhone: '081234567891', joinDate: '2024-07-15',
     asalKota: 'Surabaya', asalProvinsi: 'Jawa Timur', angkatanMasuk: 2024,
     totalPoinPelanggaran: 30, totalPrestasi: 45, statusKarakter: 'Perlu Perhatian', statusSP: 'SP1',
   },
   {
     id: '3', nis: '2024003', name: 'Umar Hadi Pratama', asrama: 'Al-Farabi',
-    kamar: 'B-201', kelas: '11B', status: 'aktif', gender: 'L',
+    kamar: 'B-201', asramaId: '2', kamarId: 'k6', kelas: '11B', status: 'aktif', gender: 'L',
     waliId: 'w3', waliName: 'Bapak Hadi', waliPhone: '081234567892', joinDate: '2023-07-10',
     asalKota: 'Semarang', asalProvinsi: 'Jawa Tengah', angkatanMasuk: 2023,
     totalPoinPelanggaran: 20, totalPrestasi: 60, statusKarakter: 'Baik', statusSP: 'Tidak Ada',
   },
   {
     id: '4', nis: '2024004', name: 'Zaid Ahmad Hidayat', asrama: 'Al-Farabi',
-    kamar: 'B-202', kelas: '11A', status: 'aktif', gender: 'L',
+    kamar: 'B-202', asramaId: '2', kamarId: 'k7', kelas: '11A', status: 'aktif', gender: 'L',
     waliId: 'w4', waliName: 'Bapak Ahmad', waliPhone: '081234567893', joinDate: '2023-07-10',
     asalKota: 'Malang', asalProvinsi: 'Jawa Timur', angkatanMasuk: 2023,
     totalPoinPelanggaran: 55, totalPrestasi: 20, statusKarakter: 'Peringatan', statusSP: 'SP2',
   },
   {
     id: '5', nis: '2024005', name: 'Bilal Ramadhan', asrama: 'Al-Ghazali',
-    kamar: 'C-301', kelas: '12A', status: 'aktif', gender: 'L',
+    kamar: 'C-301', asramaId: '3', kamarId: 'k10', kelas: '12A', status: 'aktif', gender: 'L',
     waliId: 'w5', waliName: 'Bapak Dani', waliPhone: '081234567894', joinDate: '2022-07-12',
     asalKota: 'Jakarta Selatan', asalProvinsi: 'DKI Jakarta', angkatanMasuk: 2022,
     totalPoinPelanggaran: 10, totalPrestasi: 90, statusKarakter: 'Baik', statusSP: 'Tidak Ada',
   },
   {
     id: '6', nis: '2024006', name: 'Hamza Syafiq', asrama: 'Al-Ghazali',
-    kamar: 'C-302', kelas: '12B', status: 'cuti', gender: 'L',
+    kamar: 'C-302', asramaId: '3', kamarId: 'k11', kelas: '12B', status: 'cuti', gender: 'L',
     waliId: 'w6', waliName: 'Bapak Eko', waliPhone: '081234567895', joinDate: '2022-07-12',
     asalKota: 'Bogor', asalProvinsi: 'Jawa Barat', angkatanMasuk: 2022,
     totalPoinPelanggaran: 5, totalPrestasi: 70, statusKarakter: 'Baik', statusSP: 'Tidak Ada',
   },
   {
     id: '7', nis: '2024007', name: 'Yusuf Hakim', asrama: 'Al-Fatih',
-    kamar: 'A-103', kelas: '10B', status: 'aktif', gender: 'L',
+    kamar: 'A-103', asramaId: '1', kamarId: 'k3', kelas: '10B', status: 'aktif', gender: 'L',
     waliId: 'w7', waliName: 'Bapak Fajar', waliPhone: '081234567896', joinDate: '2024-07-15',
     asalKota: 'Cirebon', asalProvinsi: 'Jawa Barat', angkatanMasuk: 2024,
     totalPoinPelanggaran: 0, totalPrestasi: 50, statusKarakter: 'Baik', statusSP: 'Tidak Ada',
   },
   {
     id: '8', nis: '2024008', name: 'Khalid Maulana', asrama: 'Al-Farabi',
-    kamar: 'B-203', kelas: '11A', status: 'skors', gender: 'L',
+    kamar: 'B-203', asramaId: '2', kamarId: 'k8', kelas: '11A', status: 'skors', gender: 'L',
     waliId: 'w8', waliName: 'Bapak Gunawan', waliPhone: '081234567897', joinDate: '2023-07-10',
     asalKota: 'Yogyakarta', asalProvinsi: 'DI Yogyakarta', angkatanMasuk: 2023,
     totalPoinPelanggaran: 40, totalPrestasi: 30, statusKarakter: 'Peringatan', statusSP: 'SP1',
   },
   {
     id: '9', nis: '2024009', name: 'Ibrahim Salman', asrama: 'Al-Ghazali',
-    kamar: 'C-303', kelas: '12A', status: 'aktif', gender: 'L',
+    kamar: 'C-303', asramaId: '3', kamarId: 'k12', kelas: '12A', status: 'aktif', gender: 'L',
     waliId: 'w9', waliName: 'Bapak Irfan', waliPhone: '081234567898', joinDate: '2021-07-14',
     asalKota: 'Surakarta', asalProvinsi: 'Jawa Tengah', angkatanMasuk: 2021,
     totalPoinPelanggaran: 0, totalPrestasi: 100, statusKarakter: 'Baik', statusSP: 'Tidak Ada',
   },
   {
     id: '10', nis: '2024010', name: 'Anas Fathurrahman', asrama: 'Al-Fatih',
-    kamar: 'A-104', kelas: '10A', status: 'aktif', gender: 'L',
+    kamar: 'A-104', asramaId: '1', kamarId: 'k4', kelas: '10A', status: 'aktif', gender: 'L',
     waliId: 'w10', waliName: 'Bapak Joko', waliPhone: '081234567899', joinDate: '2024-07-15',
     asalKota: 'Tangerang', asalProvinsi: 'Banten', angkatanMasuk: 2024,
     totalPoinPelanggaran: 25, totalPrestasi: 55, statusKarakter: 'Perlu Perhatian', statusSP: 'Tidak Ada',
+  },
+  // Santri belum terplotting kamar — asramaId & kamarId omitted
+  {
+    id: '11', nis: '2024011', name: 'Faris Abdurrahim', asrama: '',
+    kamar: '', kelas: '10B', status: 'aktif', gender: 'L',
+    waliId: 'w10', waliName: 'Bapak Syamsul', waliPhone: '082100000001', joinDate: '2024-08-01',
+    asalKota: 'Bekasi', asalProvinsi: 'Jawa Barat', angkatanMasuk: 2024,
+    totalPoinPelanggaran: 5, totalPrestasi: 40, statusKarakter: 'Baik', statusSP: 'Tidak Ada',
+  },
+  {
+    id: '12', nis: '2024012', name: 'Nabil Hamdani', asrama: '',
+    kamar: '', kelas: '11A', status: 'aktif', gender: 'L',
+    waliId: 'w10', waliName: 'Bapak Rudi', waliPhone: '082100000002', joinDate: '2024-08-01',
+    asalKota: 'Jakarta Timur', asalProvinsi: 'DKI Jakarta', angkatanMasuk: 2024,
+    totalPoinPelanggaran: 0, totalPrestasi: 60, statusKarakter: 'Baik', statusSP: 'Tidak Ada',
+  },
+  {
+    id: '13', nis: '2024013', name: 'Rafif Musyafa', asrama: '',
+    kamar: '', kelas: '12A', status: 'aktif', gender: 'L',
+    waliId: 'w10', waliName: 'Bapak Didi', waliPhone: '082100000003', joinDate: '2024-08-01',
+    asalKota: 'Bandung', asalProvinsi: 'Jawa Barat', angkatanMasuk: 2024,
+    totalPoinPelanggaran: 10, totalPrestasi: 75, statusKarakter: 'Baik', statusSP: 'Tidak Ada',
   },
 ];
 
@@ -156,17 +178,48 @@ export const mockAsrama: Asrama[] = [
 ];
 
 // ========================================
+// Mock Kamar — per asrama
+// ========================================
+export const mockKamar: Kamar[] = [
+  // Al-Fatih (asramaId: '1')
+  { id: 'k1', asramaId: '1', name: 'A-101', capacity: 6 },
+  { id: 'k2', asramaId: '1', name: 'A-102', capacity: 6 },
+  { id: 'k3', asramaId: '1', name: 'A-103', capacity: 6 },
+  { id: 'k4', asramaId: '1', name: 'A-104', capacity: 6 },
+  { id: 'k5', asramaId: '1', name: 'A-105', capacity: 8 },
+  // Al-Farabi (asramaId: '2')
+  { id: 'k6', asramaId: '2', name: 'B-201', capacity: 6 },
+  { id: 'k7', asramaId: '2', name: 'B-202', capacity: 6 },
+  { id: 'k8', asramaId: '2', name: 'B-203', capacity: 6 },
+  { id: 'k9', asramaId: '2', name: 'B-204', capacity: 8 },
+  // Al-Ghazali (asramaId: '3')
+  { id: 'k10', asramaId: '3', name: 'C-301', capacity: 8 },
+  { id: 'k11', asramaId: '3', name: 'C-302', capacity: 8 },
+  { id: 'k12', asramaId: '3', name: 'C-303', capacity: 8 },
+  // An-Nisa (asramaId: '4')
+  { id: 'k13', asramaId: '4', name: 'D-401', capacity: 8 },
+  { id: 'k14', asramaId: '4', name: 'D-402', capacity: 8 },
+  { id: 'k15', asramaId: '4', name: 'D-403', capacity: 8 },
+  // Ar-Raudah (asramaId: '5')
+  { id: 'k16', asramaId: '5', name: 'E-501', capacity: 6 },
+  { id: 'k17', asramaId: '5', name: 'E-502', capacity: 6 },
+  { id: 'k18', asramaId: '5', name: 'E-503', capacity: 8 },
+];
+
+// ========================================
 // Mock Master Pelanggaran
 // ========================================
 export const mockMasterPelanggaran: MasterPelanggaran[] = [
-  { id: '1', code: 'PL-001', name: 'Terlambat Sholat Berjamaah', category: 'ringan', points: 5, description: 'Tidak hadir tepat waktu sholat berjamaah' },
-  { id: '2', code: 'PL-002', name: 'Tidak Piket Kebersihan', category: 'ringan', points: 5, description: 'Tidak melaksanakan piket kebersihan' },
-  { id: '3', code: 'PL-003', name: 'Keluar Asrama Tanpa Izin', category: 'sedang', points: 15, description: 'Meninggalkan asrama tanpa izin musyrif' },
-  { id: '4', code: 'PL-004', name: 'Membawa HP', category: 'sedang', points: 20, description: 'Kedapatan membawa/menggunakan handphone' },
-  { id: '5', code: 'PL-005', name: 'Berkelahi', category: 'berat', points: 50, description: 'Terlibat perkelahian fisik' },
-  { id: '6', code: 'PL-006', name: 'Merokok', category: 'berat', points: 40, description: 'Kedapatan merokok di area pesantren' },
-  { id: '7', code: 'PL-007', name: 'Tidur di Waktu Belajar', category: 'ringan', points: 10, description: 'Tidur saat jam belajar malam' },
-  { id: '8', code: 'PL-008', name: 'Tidak Mengikuti Pelajaran', category: 'sedang', points: 15, description: 'Bolos kelas tanpa keterangan' },
+  { id: '1', code: 'PL-001', ranahInstansi: 'pesantren', kategori: 'Ibadah',      name: 'Terlambat Sholat Berjamaah',    severity: 'ringan',      points: 5,  description: 'Tidak hadir tepat waktu sholat berjamaah' },
+  { id: '2', code: 'PL-002', ranahInstansi: 'pesantren', kategori: 'Kebersihan', name: 'Tidak Piket Kebersihan',         severity: 'ringan',      points: 5,  description: 'Tidak melaksanakan piket kebersihan' },
+  { id: '3', code: 'PL-003', ranahInstansi: 'pesantren', kategori: 'Asrama',     name: 'Keluar Asrama Tanpa Izin',       severity: 'sedang',      points: 15, description: 'Meninggalkan asrama tanpa izin musyrif' },
+  { id: '4', code: 'PL-004', ranahInstansi: 'pesantren', kategori: 'Kedisiplinan', name: 'Membawa HP',                   severity: 'sedang',      points: 20, description: 'Kedapatan membawa/menggunakan handphone' },
+  { id: '5', code: 'PL-005', ranahInstansi: 'pesantren', kategori: 'Akhlak',     name: 'Berkelahi',                      severity: 'sangat_berat', points: 50, description: 'Terlibat perkelahian fisik' },
+  { id: '6', code: 'PL-006', ranahInstansi: 'pesantren', kategori: 'Kedisiplinan', name: 'Merokok',                      severity: 'berat',       points: 40, description: 'Kedapatan merokok di area pesantren' },
+  { id: '7', code: 'PL-007', ranahInstansi: 'madin',     kategori: 'Kelas',      name: 'Tidur di Waktu Belajar',         severity: 'ringan',      points: 10, description: 'Tidur saat jam belajar malam' },
+  { id: '8', code: 'PL-008', ranahInstansi: 'madin',     kategori: 'Kelas',      name: 'Tidak Mengikuti Pelajaran',      severity: 'sedang',      points: 15, description: 'Bolos kelas tanpa keterangan' },
+  { id: '9', code: 'PL-009', ranahInstansi: 'depag',     kategori: 'Ibadah',     name: 'Tidak Ikut Jamaah Subuh',        severity: 'sedang',      points: 15, description: 'Tidak mengikuti sholat subuh berjamaah' },
+  { id: '10', code: 'PL-010', ranahInstansi: 'madqurur', kategori: 'Hafalan',    name: 'Tidak Setoran Hafalan',          severity: 'ringan',      points: 8,  description: 'Tidak menyetorkan hafalan sesuai jadwal' },
 ];
 
 // ========================================
@@ -176,37 +229,37 @@ export const mockPelanggaran: Pelanggaran[] = [
   {
     id: '1', santriId: '1', santriName: 'Muhammad Rizki Aditya',
     pelanggaranId: '1', pelanggaranName: 'Terlambat Sholat Berjamaah',
-    category: 'ringan', points: 5, date: '2025-05-10',
+    severity: 'ringan', points: 5, date: '2025-05-10',
     reportedBy: 'Ustadz Hasan', status: 'confirmed', statusHukuman: 'selesai',
   },
   {
     id: '2', santriId: '2', santriName: 'Abdullah Firdaus',
     pelanggaranId: '3', pelanggaranName: 'Keluar Asrama Tanpa Izin',
-    category: 'sedang', points: 15, date: '2025-05-09',
+    severity: 'sedang', points: 15, date: '2025-05-09',
     reportedBy: 'Ustadz Hasan', status: 'pending', statusHukuman: 'belum',
   },
   {
     id: '3', santriId: '3', santriName: 'Umar Hadi Pratama',
     pelanggaranId: '4', pelanggaranName: 'Membawa HP',
-    category: 'sedang', points: 20, date: '2025-05-08',
+    severity: 'sedang', points: 20, date: '2025-05-08',
     reportedBy: 'Ustadz Mahmud', status: 'confirmed', statusHukuman: 'aktif',
   },
   {
     id: '4', santriId: '1', santriName: 'Muhammad Rizki Aditya',
     pelanggaranId: '7', pelanggaranName: 'Tidur di Waktu Belajar',
-    category: 'ringan', points: 10, date: '2025-05-07',
+    severity: 'ringan', points: 10, date: '2025-05-07',
     reportedBy: 'Ustadz Hasan', status: 'confirmed', statusHukuman: 'aktif',
   },
   {
     id: '5', santriId: '4', santriName: 'Zaid Ahmad Hidayat',
     pelanggaranId: '5', pelanggaranName: 'Berkelahi',
-    category: 'berat', points: 50, date: '2025-05-06',
+    severity: 'sangat_berat', points: 50, date: '2025-05-06',
     reportedBy: 'Ustadz Mahmud', status: 'confirmed', statusHukuman: 'selesai',
   },
   {
     id: '6', santriId: '7', santriName: 'Yusuf Hakim',
     pelanggaranId: '2', pelanggaranName: 'Tidak Piket Kebersihan',
-    category: 'ringan', points: 5, date: '2025-05-05',
+    severity: 'ringan', points: 5, date: '2025-05-05',
     reportedBy: 'Ustadz Hasan', status: 'rejected', statusHukuman: 'belum',
   },
 ];

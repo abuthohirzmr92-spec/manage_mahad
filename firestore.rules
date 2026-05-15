@@ -1,0 +1,98 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAuth() { return request.auth != null; }
+    function isAdmin() { return request.auth.token.role == 'admin'; }
+    function isRole(role) { return request.auth.token.role == role; }
+    function isAnyRole(roles) { return roles.hasAny([request.auth.token.role]); }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if isAuth() && (request.auth.uid == userId || isAnyRole(['admin', 'staff', 'kepala_kesiswaan', 'musyrif', 'wali_kelas', 'guru']));
+      allow create: if isAuth() && isAdmin();
+      allow update: if isAuth() && (request.auth.uid == userId || isAdmin());
+      allow delete: if isAuth() && isAdmin();
+    }
+
+    // Santri collection
+    match /santri/{santriId} {
+      allow read: if isAuth() && (
+        isAnyRole(['admin', 'staff', 'kepala_kesiswaan', 'musyrif', 'guru', 'wali_kelas'])
+        || (isRole('santri') && resource.data.userId == request.auth.uid)
+        || (isRole('wali') && resource.data.waliId == request.auth.uid)
+      );
+      allow create: if isAuth() && isAnyRole(['admin', 'staff', 'kepala_kesiswaan']);
+      allow update: if isAuth() && isAnyRole(['admin', 'staff', 'kepala_kesiswaan']);
+      allow delete: if isAuth() && isAdmin();
+    }
+
+    // Asrama
+    match /asrama/{asramaId} {
+      allow read: if isAuth();
+      allow write: if isAuth() && isAnyRole(['admin', 'kepala_kesiswaan']);
+    }
+
+    // Kamar
+    match /kamar/{kamarId} {
+      allow read: if isAuth();
+      allow write: if isAuth() && isAnyRole(['admin', 'kepala_kesiswaan']);
+    }
+
+    // Kelas
+    match /kelas/{kelasId} {
+      allow read: if isAuth();
+      allow write: if isAuth() && isAnyRole(['admin', 'kepala_kesiswaan', 'staff']);
+    }
+
+    // Mapel
+    match /mapel/{mapelId} {
+      allow read: if isAuth();
+      allow write: if isAuth() && isAnyRole(['admin', 'kepala_kesiswaan', 'staff']);
+    }
+
+    // Master Pelanggaran
+    match /masterPelanggaran/{id} {
+      allow read: if isAuth() && isAnyRole(['admin', 'kepala_kesiswaan', 'musyrif', 'guru', 'wali_kelas']);
+      allow write: if isAuth() && isAnyRole(['admin', 'kepala_kesiswaan']);
+    }
+
+    // Pelanggaran
+    match /pelanggaran/{id} {
+      allow read: if isAuth();
+      allow create: if isAuth() && isAnyRole(['admin', 'kepala_kesiswaan', 'musyrif', 'guru', 'wali_kelas']);
+      allow update: if isAuth() && isAnyRole(['admin', 'kepala_kesiswaan']);
+      allow delete: if isAuth() && isAdmin();
+    }
+
+    // Hukuman
+    match /hukuman/{id} {
+      allow read: if isAuth() && isAnyRole(['admin', 'kepala_kesiswaan', 'musyrif']);
+      allow write: if isAuth() && isAnyRole(['admin', 'kepala_kesiswaan', 'musyrif']);
+    }
+
+    // Quest
+    match /quest/{id} {
+      allow read: if isAuth();
+      allow create: if isAuth() && isAnyRole(['admin', 'kepala_kesiswaan', 'musyrif', 'wali_kelas']);
+      allow update: if isAuth() && isAnyRole(['admin', 'kepala_kesiswaan', 'musyrif']);
+      allow delete: if isAuth() && isAdmin();
+    }
+
+    // Alumni
+    match /alumni/{alumniId} {
+      allow read: if isAuth() && isAnyRole(['admin', 'staff', 'kepala_kesiswaan']);
+      allow write: if isAuth() && isAnyRole(['admin', 'kepala_kesiswaan']);
+    }
+
+    // Notifications
+    match /notifications/{notificationId} {
+      allow read: if isAuth();
+      allow create: if isAuth() && isAnyRole(['admin', 'kepala_kesiswaan']);
+      allow update: if isAuth() && (
+        resource.data.targetSantriId == request.auth.uid
+        || isAnyRole(['admin', 'kepala_kesiswaan'])
+      );
+      allow delete: if isAuth() && isAdmin();
+    }
+  }
+}

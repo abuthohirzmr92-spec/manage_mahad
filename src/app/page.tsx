@@ -3,94 +3,100 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth-store';
-import { 
-  GraduationCap, Shield, MoonStar, HeartHandshake, 
-  User, Briefcase, ClipboardCheck, School, Loader2 
+import {
+  GraduationCap, Shield, MoonStar, HeartHandshake,
+  User, Briefcase, ClipboardCheck, School, Loader2,
+  Mail, Lock, LogIn
 } from 'lucide-react';
 import { UserRole } from '@/types';
 
 const DEMO_ROLES = [
-  { 
-    roleId: 'admin' as UserRole, 
-    roleName: 'Admin', 
-    desc: 'Full Access System', 
-    email: 'admin@mahad.sch.id', 
-    icon: Shield, 
-    color: 'bg-violet-500/10 text-violet-500 border-violet-500/30 hover:bg-violet-500/20 hover:border-violet-500/50 hover:shadow-violet-500/20' 
+  {
+    roleId: 'admin' as UserRole,
+    roleName: 'Admin',
+    desc: 'Full Access System',
+    email: 'admin@mahad.sch.id',
+    icon: Shield,
+    color: 'bg-violet-500/10 text-violet-500 border-violet-500/30 hover:bg-violet-500/20 hover:border-violet-500/50 hover:shadow-violet-500/20'
   },
-  { 
-    roleId: 'musyrif' as UserRole, 
-    roleName: 'Musyrif', 
-    desc: 'Asrama & Santri', 
-    email: 'musyrif@mahad.sch.id', 
-    icon: MoonStar, 
-    color: 'bg-blue-500/10 text-blue-500 border-blue-500/30 hover:bg-blue-500/20 hover:border-blue-500/50 hover:shadow-blue-500/20' 
+  {
+    roleId: 'musyrif' as UserRole,
+    roleName: 'Musyrif',
+    desc: 'Asrama & Santri',
+    email: 'musyrif@mahad.sch.id',
+    icon: MoonStar,
+    color: 'bg-blue-500/10 text-blue-500 border-blue-500/30 hover:bg-blue-500/20 hover:border-blue-500/50 hover:shadow-blue-500/20'
   },
-  { 
-    roleId: 'kepala_kesiswaan' as UserRole, 
-    roleName: 'Kesiswaan', 
-    desc: 'Approval & Monitor', 
-    email: 'kesiswaan@mahad.sch.id', 
-    icon: ClipboardCheck, 
-    color: 'bg-rose-500/10 text-rose-500 border-rose-500/30 hover:bg-rose-500/20 hover:border-rose-500/50 hover:shadow-rose-500/20' 
+  {
+    roleId: 'kepala_kesiswaan' as UserRole,
+    roleName: 'Kesiswaan',
+    desc: 'Approval & Monitor',
+    email: 'kesiswaan@mahad.sch.id',
+    icon: ClipboardCheck,
+    color: 'bg-rose-500/10 text-rose-500 border-rose-500/30 hover:bg-rose-500/20 hover:border-rose-500/50 hover:shadow-rose-500/20'
   },
-  { 
-    roleId: 'staff' as UserRole, 
-    roleName: 'Staff', 
-    desc: 'Operasional Harian', 
-    email: 'staff@mahad.sch.id', 
-    icon: Briefcase, 
-    color: 'bg-cyan-500/10 text-cyan-500 border-cyan-500/30 hover:bg-cyan-500/20 hover:border-cyan-500/50 hover:shadow-cyan-500/20' 
+  {
+    roleId: 'staff' as UserRole,
+    roleName: 'Staff',
+    desc: 'Operasional Harian',
+    email: 'staff@mahad.sch.id',
+    icon: Briefcase,
+    color: 'bg-cyan-500/10 text-cyan-500 border-cyan-500/30 hover:bg-cyan-500/20 hover:border-cyan-500/50 hover:shadow-cyan-500/20'
   },
-  { 
-    roleId: 'guru' as UserRole, 
-    roleName: 'Guru', 
-    desc: 'Pengajar Kelas', 
-    email: 'guru@mahad.sch.id', 
-    icon: GraduationCap, 
-    color: 'bg-indigo-500/10 text-indigo-500 border-indigo-500/30 hover:bg-indigo-500/20 hover:border-indigo-500/50 hover:shadow-indigo-500/20' 
+  {
+    roleId: 'guru' as UserRole,
+    roleName: 'Guru',
+    desc: 'Pengajar Kelas',
+    email: 'guru@mahad.sch.id',
+    icon: GraduationCap,
+    color: 'bg-indigo-500/10 text-indigo-500 border-indigo-500/30 hover:bg-indigo-500/20 hover:border-indigo-500/50 hover:shadow-indigo-500/20'
   },
-  { 
-    roleId: 'wali_kelas' as UserRole, 
-    roleName: 'Wali Kelas', 
-    desc: 'Manajemen Kelas', 
-    email: 'walikelas@mahad.sch.id', 
-    icon: School, 
-    color: 'bg-teal-500/10 text-teal-500 border-teal-500/30 hover:bg-teal-500/20 hover:border-teal-500/50 hover:shadow-teal-500/20' 
+  {
+    roleId: 'wali_kelas' as UserRole,
+    roleName: 'Wali Kelas',
+    desc: 'Manajemen Kelas',
+    email: 'walikelas@mahad.sch.id',
+    icon: School,
+    color: 'bg-teal-500/10 text-teal-500 border-teal-500/30 hover:bg-teal-500/20 hover:border-teal-500/50 hover:shadow-teal-500/20'
   },
-  { 
-    roleId: 'wali' as UserRole, 
-    roleName: 'Wali Santri', 
-    desc: 'Pantau Anak', 
-    email: 'wali@mahad.sch.id', 
-    icon: HeartHandshake, 
-    color: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30 hover:bg-emerald-500/20 hover:border-emerald-500/50 hover:shadow-emerald-500/20' 
+  {
+    roleId: 'wali' as UserRole,
+    roleName: 'Wali Santri',
+    desc: 'Pantau Anak',
+    email: 'wali@mahad.sch.id',
+    icon: HeartHandshake,
+    color: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30 hover:bg-emerald-500/20 hover:border-emerald-500/50 hover:shadow-emerald-500/20'
   },
-  { 
-    roleId: 'santri' as UserRole, 
-    roleName: 'Santri', 
-    desc: 'Akses Pribadi', 
-    email: 'santri@mahad.sch.id', 
-    icon: User, 
-    color: 'bg-amber-500/10 text-amber-500 border-amber-500/30 hover:bg-amber-500/20 hover:border-amber-500/50 hover:shadow-amber-500/20' 
+  {
+    roleId: 'santri' as UserRole,
+    roleName: 'Santri',
+    desc: 'Akses Pribadi',
+    email: 'santri@mahad.sch.id',
+    icon: User,
+    color: 'bg-amber-500/10 text-amber-500 border-amber-500/30 hover:bg-amber-500/20 hover:border-amber-500/50 hover:shadow-amber-500/20'
   },
 ];
 
 export default function LoginPage() {
   const [loadingRole, setLoadingRole] = useState<UserRole | null>(null);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const { login } = useAuthStore();
 
   const handleDemoLogin = (role: typeof DEMO_ROLES[0]) => {
     setLoadingRole(role.roleId);
-    
+
     // Simulate network delay for realistic UX
     setTimeout(() => {
       // Inject user directly into the store to bypass mockUsers limit
       useAuthStore.setState({
-        user: { 
-          id: `demo-${role.roleId}`, 
-          name: `Demo ${role.roleName}`, 
-          email: role.email, 
+        user: {
+          id: `demo-${role.roleId}`,
+          name: `Demo ${role.roleName}`,
+          email: role.email,
           role: role.roleId,
           // Assign a dummy child ID if the role is wali to prevent errors in dashboard
           childSantriId: role.roleId === 'wali' ? '1' : undefined
@@ -102,6 +108,20 @@ export default function LoginPage() {
     }, 800);
   };
 
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError('');
+    setIsSubmitting(true);
+    const success = await login(email, password);
+    setIsSubmitting(false);
+    if (success) {
+      router.push('/dashboard');
+    } else {
+      const err = useAuthStore.getState().error;
+      setLoginError(err || 'Login gagal. Periksa email dan password.');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 flex items-center justify-center p-4 sm:p-8">
       {/* Background decoration */}
@@ -111,7 +131,7 @@ export default function LoginPage() {
       </div>
 
       <div className="relative w-full max-w-4xl flex flex-col md:flex-row gap-8 items-stretch">
-        
+
         {/* Left Side: Branding */}
         <div className="flex-1 flex flex-col justify-center text-center md:text-left space-y-6 md:pr-8">
           <div className="inline-flex items-center justify-center md:justify-start gap-4">
@@ -126,7 +146,7 @@ export default function LoginPage() {
               </div>
             </div>
           </div>
-          
+
           <div className="space-y-4 text-slate-400">
             <p className="text-lg leading-relaxed">
               Sistem manajemen pesantren modern dengan Role-Based Access Control terpusat.
@@ -137,12 +157,12 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Right Side: Demo Login Cards */}
+        {/* Right Side: Demo Login Cards + Firebase Login Form */}
         <div className="flex-1">
           <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-700/50 rounded-3xl shadow-2xl p-6 sm:p-8 relative overflow-hidden">
             {/* Glossy reflection effect */}
             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
-            
+
             <div className="mb-6">
               <h2 className="text-xl font-bold text-white mb-1">Quick Demo Login</h2>
               <p className="text-slate-400 text-sm">Pilih peran Anda untuk masuk secara instan</p>
@@ -152,7 +172,7 @@ export default function LoginPage() {
               {DEMO_ROLES.map((role) => {
                 const Icon = role.icon;
                 const isLoading = loadingRole === role.roleId;
-                
+
                 return (
                   <button
                     key={role.roleId}
@@ -175,6 +195,78 @@ export default function LoginPage() {
                 );
               })}
             </div>
+
+            {/* Divider between demo and login form */}
+            <div className="relative my-8">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-700/50"></div>
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="bg-slate-900/60 px-3 text-slate-500">ATAU LOGIN MANUAL</span>
+              </div>
+            </div>
+
+            {/* Firebase Email/Password Login Form */}
+            <form onSubmit={handleLogin} className="space-y-4">
+              {/* Email Input */}
+              <div>
+                <label htmlFor="login-email" className="block text-sm font-medium text-slate-300 mb-1.5">
+                  Email
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                  <input
+                    id="login-email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="santri@mahad.sch.id"
+                    className="w-full bg-slate-800/50 border border-slate-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all duration-200"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Password Input */}
+              <div>
+                <label htmlFor="login-password" className="block text-sm font-medium text-slate-300 mb-1.5">
+                  Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                  <input
+                    id="login-password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full bg-slate-800/50 border border-slate-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all duration-200"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Error Message */}
+              {loginError && (
+                <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3">
+                  <p className="text-xs text-red-400">{loginError}</p>
+                </div>
+              )}
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-medium rounded-lg py-2.5 px-4 text-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-violet-600/20"
+              >
+                {isSubmitting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <LogIn className="w-4 h-4" />
+                )}
+                {isSubmitting ? 'Memproses...' : 'Masuk'}
+              </button>
+            </form>
 
             <div className="mt-8 pt-6 border-t border-slate-800 text-center flex flex-col items-center gap-2">
               <p className="text-xs text-slate-500">

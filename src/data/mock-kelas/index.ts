@@ -1,4 +1,10 @@
-export { type AcademicTab, type Kelas, type GroupedKelas } from './types';
-export { mockKelasFormal, formalLevelsInitial } from './formal';
-export { mockKelasDiniyah, diniyahLevelsInitial } from './diniyah';
-export { mockKelasQuran, quranLevelsInitial } from './quran';
+export {
+  type AcademicTab,
+  type Kelas,
+  type TingkatGroup,
+  type JenjangGroup,
+  JENJANG_CONFIG,
+} from './types';
+export { mockKelasFormal } from './formal';
+export { mockKelasDiniyah } from './diniyah';
+export { mockKelasQuran } from './quran';
