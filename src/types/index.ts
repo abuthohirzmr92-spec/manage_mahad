@@ -26,6 +26,12 @@ export interface NavItem {
   disabled?: boolean;
 }
 
+export interface NavGroup {
+  title: string;
+  icon: string;
+  items: NavItem[];
+}
+
 export interface FeatureFlag {
   key: string;
   enabled: boolean;
@@ -254,6 +260,21 @@ export interface MasterJenjang {
   instansi: Instansi;
   progressionIndexes: number[];
   status: 'active' | 'inactive';
+}
+
+// ── Guru ──────────────────────────────────────────────────────
+
+export interface Guru {
+  id: string;
+  name: string;
+  nip: string;
+  ranahInstansi: RanahInstansi;
+  status: 'aktif' | 'nonaktif';
+  /** Data opsional — dilengkapi guru sendiri via profil */
+  email?: string;
+  noWA?: string;
+  alamat?: string;
+  userId?: string;
 }
 
 export interface DataTableColumn<T> {

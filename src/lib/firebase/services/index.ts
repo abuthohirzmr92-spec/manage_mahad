@@ -14,3 +14,6 @@ export { teacherAssignmentService } from './teacherAssignment';
 export { masterHukumanService } from './masterHukuman';
 export { masterTingkatService } from './masterTingkat';
 export { masterJenjangService } from './masterJenjang';
+export { healthVisitService } from './healthVisit';
+export { healthPermissionService } from './healthPermission';
+export { guruService } from './guru';

@@ -208,6 +208,21 @@ export default function ImportPage() {
     fileInputRef.current?.click();
   }, []);
 
+  const handleDownloadTemplate = useCallback(() => {
+    const templates: Record<string, string> = {
+      santri: 'nis,name,asrama,kamar,kelas,gender,angkatan_masuk,asal_kota,asal_provinsi,join_date,wali_name,wali_phone\n1001,Ahmad Fauzi,Asrama A,Kamar 1,Kelas 10A,L,2025,Malang,Jawa Timur,2025-07-01,Bapak Hasan,081234567890',
+      guru: 'name,nip,ranah_instansi\nUstadz Mahmud,19850115-023,madin',
+    };
+    const csv = templates[selectedType] || 'nama,deskripsi\nContoh,Isi data di sini';
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `template_${selectedType}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [selectedType]);
+
   return (
     <div className="space-y-6">
       {/* 1. Header Halaman */}
@@ -287,7 +302,10 @@ export default function ImportPage() {
           <PageCard title="Upload Area" description={`Langkah 2: Unggah file data ${importTypes.find(t => t.id === selectedType)?.label}`}>
             {/* Download Template Action */}
             <div className="flex justify-end mb-4">
-              <button className="flex items-center gap-2 text-xs text-primary hover:text-primary/80 transition-colors font-semibold bg-primary/10 px-3 py-1.5 rounded-md hover:bg-primary/20">
+              <button
+                onClick={handleDownloadTemplate}
+                className="flex items-center gap-2 text-xs text-primary hover:text-primary/80 transition-colors font-semibold bg-primary/10 px-3 py-1.5 rounded-md hover:bg-primary/20"
+              >
                 <Download className="w-4 h-4" />
                 Download Template {importTypes.find(t => t.id === selectedType)?.label} (.csv)
               </button>

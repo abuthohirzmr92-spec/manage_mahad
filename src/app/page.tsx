@@ -3,10 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth-store';
-import {
-  GraduationCap, Loader2,
-  Mail, Lock, LogIn
-} from 'lucide-react';
+import { GraduationCap, Loader2, Mail, Lock, LogIn } from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -31,90 +28,102 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 flex items-center justify-center p-4 sm:p-8">
-      {/* Background decoration */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-violet-600/10 rounded-full blur-[100px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[100px]" />
-      </div>
+    <div className="min-h-screen bg-stone-50 flex">
 
-      <div className="relative w-full max-w-md">
+      {/* Left — Branding */}
+      <div className="hidden lg:flex w-1/2 bg-emerald-700 flex-col justify-between p-12 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.08),transparent_60%)]" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-emerald-600/30 rounded-full blur-[120px] translate-x-1/3 translate-y-1/3" />
 
-        {/* Branding */}
-        <div className="text-center space-y-4 mb-8">
-          <div className="inline-flex items-center justify-center gap-3">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 shadow-xl shadow-violet-600/20 flex items-center justify-center">
+        <div className="relative">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-12 h-12 rounded-xl bg-white/15 flex items-center justify-center">
               <GraduationCap className="w-7 h-7 text-white" />
             </div>
+            <div>
+              <h1 className="text-lg font-bold text-white tracking-tight">Ponpes Daruttahuid</h1>
+              <p className="text-emerald-200 text-xs">Malang</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">Ma&apos;had Manager</h1>
-            <p className="text-slate-400 text-sm mt-1">Sistem Manajemen Pesantren</p>
-          </div>
+
+          <h2 className="text-3xl font-bold text-white leading-snug max-w-sm">
+            Ma&apos;had Manager
+          </h2>
+          <p className="text-emerald-200 text-sm mt-2 max-w-sm leading-relaxed">
+            Platform tata kelola santri, pemantauan pelanggaran, pembinaan karakter, dan manajemen asrama — terintegrasi dalam satu sistem.
+          </p>
         </div>
 
-        {/* Login Card */}
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-700/50 rounded-3xl shadow-2xl p-6 sm:p-8 relative overflow-hidden">
-          {/* Glossy reflection effect */}
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+        <p className="relative text-emerald-300 text-xs">
+          &copy; {new Date().getFullYear()} Ponpes Daruttahuid Malang. Seluruh hak cipta dilindungi.
+        </p>
+      </div>
 
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-white mb-1">Masuk</h2>
-            <p className="text-slate-400 text-sm">Silakan login dengan email dan password</p>
+      {/* Right — Form */}
+      <div className="flex-1 flex items-center justify-center p-8">
+        <div className="w-full max-w-sm">
+
+          {/* Mobile branding */}
+          <div className="lg:hidden text-center mb-8">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-emerald-100 mb-3">
+              <GraduationCap className="w-6 h-6 text-emerald-700" />
+            </div>
+            <h1 className="text-lg font-bold text-stone-800">Ponpes Daruttahuid Malang</h1>
+            <p className="text-stone-500 text-sm">Ma&apos;had Manager</p>
           </div>
 
-          {/* Email/Password Login Form */}
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-stone-800">Masuk</h2>
+            <p className="text-stone-500 text-sm mt-1">Silakan login dengan akun Anda</p>
+          </div>
+
           <form onSubmit={handleLogin} className="space-y-4">
-            {/* Email Input */}
             <div>
-              <label htmlFor="login-email" className="block text-sm font-medium text-slate-300 mb-1.5">
+              <label htmlFor="login-email" className="block text-sm font-medium text-stone-700 mb-1.5">
                 Email
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" />
                 <input
                   id="login-email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="santri@mahad.sch.id"
-                  className="w-full bg-slate-800/50 border border-slate-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all duration-200"
+                  placeholder="nama@mahad.sch.id"
+                  className="w-full bg-white border border-stone-200 rounded-lg pl-10 pr-4 py-2.5 text-sm text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-400 transition-all"
                   required
                 />
               </div>
             </div>
 
-            {/* Password Input */}
             <div>
-              <label htmlFor="login-password" className="block text-sm font-medium text-slate-300 mb-1.5">
+              <label htmlFor="login-password" className="block text-sm font-medium text-stone-700 mb-1.5">
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" />
                 <input
                   id="login-password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full bg-slate-800/50 border border-slate-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all duration-200"
+                  placeholder="Masukkan password"
+                  className="w-full bg-white border border-stone-200 rounded-lg pl-10 pr-4 py-2.5 text-sm text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-400 transition-all"
                   required
                 />
               </div>
             </div>
 
-            {/* Error Message */}
             {loginError && (
-              <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3">
-                <p className="text-xs text-red-400">{loginError}</p>
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                <p className="text-xs text-red-600">{loginError}</p>
               </div>
             )}
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-medium rounded-lg py-2.5 px-4 text-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-violet-600/20"
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg py-2.5 px-4 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -125,8 +134,8 @@ export default function LoginPage() {
             </button>
           </form>
         </div>
-
       </div>
+
     </div>
   );
 }

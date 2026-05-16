@@ -22,7 +22,7 @@ import type { Notification } from '@/types';
 import {
   Bell, BellRing, AlertTriangle, CheckCircle2,
   Settings, Clock, Trophy, ShieldAlert, CheckCheck, Inbox,
-  Trash2, ChevronDown, ChevronUp,
+  Trash2, ChevronDown, ChevronUp, Stethoscope,
 } from 'lucide-react';
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -75,6 +75,8 @@ function getIcon(notif: Notification) {
   if (notif.title.toLowerCase().includes('quest') || notif.title.toLowerCase().includes('prestasi')) return <Trophy className="w-5 h-5 text-amber-600 dark:text-amber-400" />;
   if (notif.title.toLowerCase().includes('hukuman')) return <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />;
   if (notif.title.toLowerCase().includes('approv') || notif.title.toLowerCase().includes('pending') || notif.title.toLowerCase().includes('pemutihan')) return <Clock className="w-5 h-5 text-orange-600 dark:text-orange-400" />;
+  // Health notifications
+  if (notif.title.toLowerCase().includes('uks') || notif.title.toLowerCase().includes('kesehatan') || notif.title.toLowerCase().includes('observasi') || notif.title.toLowerCase().includes('berobat') || notif.title.toLowerCase().includes('darurat')) return <Stethoscope className="w-5 h-5 text-teal-600 dark:text-teal-400" />;
   if (notif.type === 'warning') return <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />;
   if (notif.type === 'success') return <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />;
   if (notif.type === 'error') return <ShieldAlert className="w-5 h-5 text-red-600 dark:text-red-400" />;
@@ -86,6 +88,8 @@ function getIconBackground(notif: Notification) {
   if (notif.title.toLowerCase().includes('quest') || notif.title.toLowerCase().includes('prestasi')) return 'bg-amber-500/10 border-amber-500/20';
   if (notif.title.toLowerCase().includes('hukuman') || notif.type === 'success') return 'bg-emerald-500/10 border-emerald-500/20';
   if (notif.title.toLowerCase().includes('approv') || notif.title.toLowerCase().includes('pending')) return 'bg-orange-500/10 border-orange-500/20';
+  // Health notifications — teal background
+  if (notif.title.toLowerCase().includes('uks') || notif.title.toLowerCase().includes('kesehatan') || notif.title.toLowerCase().includes('observasi') || notif.title.toLowerCase().includes('berobat') || notif.title.toLowerCase().includes('darurat')) return 'bg-teal-500/10 border-teal-500/20';
   return 'bg-blue-500/10 border-blue-500/20';
 }
 

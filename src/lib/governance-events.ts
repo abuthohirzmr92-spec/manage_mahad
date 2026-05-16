@@ -20,7 +20,18 @@ export type GovernanceEventType =
   | 'quest:rejected'
   | 'tolerance:exceeded'
   | 'sp:escalated'
-  | 'reward:granted';
+  | 'reward:granted'
+  // ── Health Ecosystem ──────────────────────────────────────
+  | 'health:visit_created'
+  | 'health:visit_updated'
+  | 'health:emergency'
+  | 'health:permission_requested'
+  | 'health:permission_approved'
+  | 'health:permission_rejected'
+  | 'health:permission_departed'
+  | 'health:permission_returned'
+  | 'health:observation_started'
+  | 'health:observation_ended';
 
 export interface GovernanceEvent {
   type: GovernanceEventType;
@@ -96,6 +107,54 @@ export interface RewardGrantedPayload {
   rewardType: string;
   points: number;
   grantedBy: string;
+}
+
+// ── Health Payload Contracts ───────────────────────────────────────
+
+export interface HealthVisitCreatedPayload {
+  visitId: string;
+  keluhan: string;
+  severity: string;
+  category: string;
+  petugasName?: string;
+}
+
+export interface HealthVisitUpdatedPayload {
+  visitId: string;
+  newStatus: string;
+  previousStatus: string;
+}
+
+export interface HealthEmergencyPayload {
+  visitId: string;
+  keluhan: string;
+  severity: 'darurat';
+  petugasName?: string;
+}
+
+export interface HealthPermissionRequestedPayload {
+  permissionId: string;
+  healthVisitId: string;
+  tujuanBerobat: string;
+  severity: string;
+  requiresSupervisor: boolean;
+}
+
+export interface HealthPermissionApprovedPayload {
+  permissionId: string;
+  healthVisitId: string;
+  supervisorName?: string;
+}
+
+export interface HealthPermissionDepartedPayload {
+  permissionId: string;
+  keluarAt: string;
+  supervisorName?: string;
+}
+
+export interface HealthPermissionReturnedPayload {
+  permissionId: string;
+  kembaliAt: string;
 }
 
 // ── Notification Factory ────────────────────────────────────────────────────
@@ -198,6 +257,94 @@ export function getNotificationTemplate(
         title: 'Status SP Meningkat',
         message: `${event.santriName}: SP naik dari ${p.previousSP} ke ${p.newSP} (total ${p.totalPoints} poin pelanggaran)`,
         type: 'error',
+        targetSantriId: event.santriId,
+      };
+    }
+    // ── Health Ecosystem ──────────────────────────────────────
+    case 'health:visit_created': {
+      const p = event.payload as unknown as HealthVisitCreatedPayload;
+      return {
+        title: 'Kunjungan UKS Baru',
+        message: `${event.santriName} memasuki UKS — ${p.keluhan} (${p.severity}). Petugas: ${p.petugasName ?? '-'}`,
+        type: 'info',
+        targetSantriId: event.santriId,
+      };
+    }
+    case 'health:visit_updated': {
+      const p = event.payload as unknown as HealthVisitUpdatedPayload;
+      return {
+        title: 'Status UKS Diperbarui',
+        message: `${event.santriName}: status kunjungan UKS berubah dari "${p.previousStatus}" menjadi "${p.newStatus}"`,
+        type: 'info',
+        targetSantriId: event.santriId,
+      };
+    }
+    case 'health:emergency': {
+      const p = event.payload as unknown as HealthEmergencyPayload;
+      return {
+        title: 'DARURAT KESEHATAN',
+        message: `${event.santriName} memerlukan penanganan darurat: ${p.keluhan}. Petugas: ${p.petugasName ?? '-'}`,
+        type: 'error',
+        targetSantriId: event.santriId,
+      };
+    }
+    case 'health:permission_requested': {
+      const p = event.payload as unknown as HealthPermissionRequestedPayload;
+      return {
+        title: 'Izin Berobat Diajukan',
+        message: `${event.santriName} mengajukan izin berobat ke ${p.tujuanBerobat} (${p.severity})${p.requiresSupervisor ? ' — wajib pengawas' : ''}`,
+        type: 'warning',
+        targetSantriId: event.santriId,
+      };
+    }
+    case 'health:permission_approved': {
+      const p = event.payload as unknown as HealthPermissionApprovedPayload;
+      return {
+        title: 'Izin Berobat Disetujui',
+        message: `${event.santriName} mendapatkan izin berobat${p.supervisorName ? `. Pengawas: ${p.supervisorName}` : ''}`,
+        type: 'success',
+        targetSantriId: event.santriId,
+      };
+    }
+    case 'health:permission_rejected': {
+      return {
+        title: 'Izin Berobat Ditolak',
+        message: `Pengajuan izin berobat ${event.santriName} telah ditolak.`,
+        type: 'info',
+        targetSantriId: event.santriId,
+      };
+    }
+    case 'health:permission_departed': {
+      const p = event.payload as unknown as HealthPermissionDepartedPayload;
+      return {
+        title: 'Santri Keluar Berobat',
+        message: `${event.santriName} keluar pondok untuk berobat${p.supervisorName ? ` didampingi ${p.supervisorName}` : ''} pada ${p.keluarAt}`,
+        type: 'info',
+        targetSantriId: event.santriId,
+      };
+    }
+    case 'health:permission_returned': {
+      const p = event.payload as unknown as HealthPermissionReturnedPayload;
+      return {
+        title: 'Santri Kembali dari Berobat',
+        message: `${event.santriName} telah kembali ke pondok pada ${p.kembaliAt}`,
+        type: 'success',
+        targetSantriId: event.santriId,
+      };
+    }
+    case 'health:observation_started': {
+      return {
+        title: 'Observasi Kesehatan Dimulai',
+        message: `${event.santriName} dalam masa observasi kesehatan di UKS.`,
+        type: 'warning',
+        targetSantriId: event.santriId,
+      };
+    }
+    case 'health:observation_ended': {
+      return {
+        title: 'Observasi Kesehatan Selesai',
+        message: `${event.santriName} telah selesai masa observasi kesehatan.`,
+        type: 'success',
         targetSantriId: event.santriId,
       };
     }

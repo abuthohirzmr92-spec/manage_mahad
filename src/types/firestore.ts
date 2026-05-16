@@ -181,6 +181,21 @@ export interface FirestoreTeacherAssignment {
   updatedAt: Timestamp;
 }
 
+// --------------- Guru ---------------
+
+export interface FirestoreGuru {
+  name: string;
+  nip: string;
+  ranahInstansi: import('@/types').RanahInstansi;
+  status: 'aktif' | 'nonaktif';
+  email?: string;
+  noWA?: string;
+  alamat?: string;
+  userId?: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
 // --------------- Hukuman ---------------
 
 export interface FirestoreHukuman {
