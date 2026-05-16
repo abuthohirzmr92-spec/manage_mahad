@@ -30,6 +30,7 @@ export const navigationGroups: NavGroup[] = [
     title: 'Kesiswaan',
     icon: 'BookOpen',
     items: [
+      { title: 'Governance Review', href: '/dashboard/governance', icon: 'Gavel', roles: ['admin', 'musyrif', 'staff', 'kepala_kesiswaan', 'guru', 'wali_kelas'] },
       { title: 'Master Pelanggaran', href: '/dashboard/master-pelanggaran', icon: 'BookOpen', roles: ['admin', 'kepala_kesiswaan'] },
       { title: 'Pelanggaran', href: '/dashboard/pelanggaran', icon: 'AlertTriangle', roles: ['admin', 'musyrif', 'staff', 'kepala_kesiswaan', 'guru', 'wali_kelas'] },
       { title: 'Hukuman', href: '/dashboard/hukuman', icon: 'Gavel', roles: ['admin', 'musyrif', 'kepala_kesiswaan'] },

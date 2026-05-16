@@ -105,11 +105,40 @@ export interface FirestorePelanggaran {
   reportedBy: string;
   reportedByUserId?: string;
   reportedByRole?: string;
-  status: 'pending' | 'confirmed' | 'rejected';
+  status: 'confirmed';
   statusHukuman: 'belum' | 'aktif' | 'selesai';
   punishmentId?: string;
   punishmentName?: string;
   notes?: string;
+  governanceCaseId?: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+// ── Governance Case ──────────────────────────────────────────────────────
+
+export interface FirestoreGovernanceCase {
+  sourceType: import('@/types').GovernanceSourceType;
+  submittedBy: string;
+  submittedByRole?: import('@/types').UserRole;
+  santriId: string;
+  santriName: string;
+  reason: string;
+  severity?: PelanggaranSeverity;
+  points?: number;
+  date: string;
+  notes?: string;
+  masterPelanggaranId?: string;
+  masterPelanggaranName?: string;
+  relatedEntityType?: string;
+  relatedEntityId?: string;
+  reviewStatus: import('@/types').GovernanceReviewStatus;
+  reviewedBy?: string;
+  reviewedByRole?: import('@/types').UserRole;
+  reviewedAt?: Timestamp;
+  reviewNotes?: string;
+  violationId?: string;
+  warningCount?: number;
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }

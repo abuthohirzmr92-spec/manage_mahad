@@ -236,7 +236,7 @@ export const mockPelanggaran: Pelanggaran[] = [
     id: '2', santriId: '2', santriName: 'Abdullah Firdaus',
     pelanggaranId: '3', pelanggaranName: 'Keluar Asrama Tanpa Izin',
     severity: 'sedang', points: 15, date: '2025-05-09',
-    reportedBy: 'Ustadz Hasan', status: 'pending', statusHukuman: 'belum',
+    reportedBy: 'Ustadz Hasan', status: 'confirmed', statusHukuman: 'belum',
   },
   {
     id: '3', santriId: '3', santriName: 'Umar Hadi Pratama',
@@ -260,7 +260,7 @@ export const mockPelanggaran: Pelanggaran[] = [
     id: '6', santriId: '7', santriName: 'Yusuf Hakim',
     pelanggaranId: '2', pelanggaranName: 'Tidak Piket Kebersihan',
     severity: 'ringan', points: 5, date: '2025-05-05',
-    reportedBy: 'Ustadz Hasan', status: 'rejected', statusHukuman: 'belum',
+    reportedBy: 'Ustadz Hasan', status: 'confirmed', statusHukuman: 'belum',
   },
 ];
 
@@ -401,7 +401,7 @@ export const dashboardStats = {
   get totalAsrama() { return mockAsrama.length; },
   get asramaAktif() { return mockAsrama.filter(a => a.status === 'aktif').length; },
   get pelanggaranBulanIni() { return mockPelanggaran.length; },
-  get pelanggaranMingguIni() { return mockPelanggaran.filter(p => p.status === 'pending').length; },
+  get pelanggaranMingguIni() { return 0; }, // Pending now via GovernanceCase
   get questAktif() { return mockQuest.filter(q => q.status === 'inProgress').length; },
   get questSelesai() { return mockQuest.filter(q => q.status === 'completed').length; },
   get hukumanAktif() { return mockHukuman.filter(h => h.status === 'aktif').length; },

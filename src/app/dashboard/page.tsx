@@ -34,7 +34,7 @@ function AdminDashboard() {
     totalSantri: santri.length,
     santriAktif: santri.filter(s => s.status === 'aktif').length,
     totalPelanggaran: pelanggaran.length,
-    pelanggaranPending: pelanggaran.filter(p => p.status === 'pending').length,
+    pelanggaranPending: 0, // Pending now tracked via GovernanceCase collection
     pelanggaranConfirmed: pelanggaran.filter(p => p.status === 'confirmed').length,
     questAktif: quest.filter(q => q.status === 'inProgress' || q.status === 'available').length,
     questSelesai: quest.filter(q => q.status === 'completed').length,
@@ -377,7 +377,7 @@ function WaliKelasDashboard() {
   );
   const questSelesai = questKelas.filter(q => q.status === 'completed').length;
   const questBerjalan = questKelas.filter(q => q.status === 'inProgress').length;
-  const pelanggaranPending = pelanggaranKelas.filter(p => p.status === 'pending').length;
+  const pelanggaranPending = 0; // Pending now tracked via GovernanceCase collection
 
   const topPelanggaranChart = [...santriKelas]
     .sort((a, b) => b.totalPoinPelanggaran - a.totalPoinPelanggaran)

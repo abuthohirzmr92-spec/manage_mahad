@@ -17,3 +17,4 @@ export { masterJenjangService } from './masterJenjang';
 export { healthVisitService } from './healthVisit';
 export { healthPermissionService } from './healthPermission';
 export { guruService } from './guru';
+export { governanceCaseService } from './governanceCase';

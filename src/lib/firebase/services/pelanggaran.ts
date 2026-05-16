@@ -105,13 +105,11 @@ export const pelanggaranService = {
     await deleteDoc(doc(db, COLLECTION, id));
   },
 
-  /** Confirm a pelanggaran — set status to 'confirmed'. */
-  async confirm(id: string): Promise<void> {
-    await pelanggaranService.update(id, { status: 'confirmed' });
-  },
-
-  /** Reject a pelanggaran — set status to 'rejected'. */
-  async reject(id: string): Promise<void> {
-    await pelanggaranService.update(id, { status: 'rejected' });
+  /**
+   * Create a confirmed violation from a governance review outcome.
+   * Pelanggaran is always created as 'confirmed' — no pending/rejected states.
+   */
+  async createFromReview(data: Omit<FirestorePelanggaran, 'createdAt' | 'updatedAt'>): Promise<string> {
+    return pelanggaranService.create({ ...data, status: 'confirmed' });
   },
 };

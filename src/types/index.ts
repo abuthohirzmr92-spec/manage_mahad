@@ -180,11 +180,62 @@ export interface Pelanggaran {
   reportedBy: string;
   reportedByUserId?: string;
   reportedByRole?: UserRole;
-  status: 'pending' | 'confirmed' | 'rejected';
+  status: 'confirmed';
   statusHukuman: 'belum' | 'aktif' | 'selesai';
   punishmentId?: string;
   punishmentName?: string;
   notes?: string;
+  /** FK to GovernanceCase that spawned this violation */
+  governanceCaseId?: string;
+}
+
+// ── Unified Governance Review ──────────────────────────────────────────────
+
+export type GovernanceSourceType = 'manual_report' | 'system_detection';
+
+export type GovernanceReviewStatus = 'pending_review' | 'warning' | 'official_violation';
+
+export interface GovernanceCase {
+  id: string;
+
+  /** Who/what submitted this case */
+  sourceType: GovernanceSourceType;
+  submittedBy: string;
+  submittedByRole?: UserRole;
+
+  /** The santri involved */
+  santriId: string;
+  santriName: string;
+
+  /** What happened */
+  reason: string;
+  severity?: PelanggaranSeverity;
+  points?: number;
+  date: string;
+  notes?: string;
+
+  /** Optional reference to a specific rule (for manual reports) */
+  masterPelanggaranId?: string;
+  masterPelanggaranName?: string;
+
+  /** Optional reference to related entity (izin kesehatan, movement, etc.) */
+  relatedEntityType?: string;
+  relatedEntityId?: string;
+
+  /** Review outcome */
+  reviewStatus: GovernanceReviewStatus;
+  reviewedBy?: string;
+  reviewedByRole?: UserRole;
+  reviewedAt?: string;
+  reviewNotes?: string;
+
+  /** If reviewStatus = 'official_violation', FK to the created Pelanggaran */
+  violationId?: string;
+
+  /** Warning counter for future escalation */
+  warningCount?: number;
+
+  createdAt: string;
 }
 
 export interface Hukuman {

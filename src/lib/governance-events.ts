@@ -9,12 +9,18 @@ import type { PelanggaranSeverity } from '@/types';
 // ── Event Types ────────────────────────────────────────────────────────────
 
 export type GovernanceEventType =
+  // ── Unified Governance Review ──────────────────────────────
+  | 'governance:case_created'
+  | 'governance:case_reviewed'
+  | 'governance:warning_issued'
+  | 'governance:violation_created'
+  // ── Pelanggaran (legacy + new via governance) ──────────────
   | 'pelanggaran:created'
-  | 'pelanggaran:confirmed'
-  | 'pelanggaran:rejected'
+  // ── Hukuman ────────────────────────────────────────────────
   | 'hukuman:executed'
   | 'hukuman:completed'
   | 'hukuman:cancelled'
+  // ── Quest & Reward ────────────────────────────────────────
   | 'quest:completed'
   | 'quest:approved'
   | 'quest:rejected'
@@ -56,6 +62,40 @@ export function createGovernanceEvent(
     payload,
     timestamp: new Date().toISOString(),
   };
+}
+
+// ── Governance Review Payload Contracts ─────────────────────────────────────
+
+export interface GovernanceCaseCreatedPayload {
+  caseId: string;
+  reason: string;
+  sourceType: string;
+  severity?: string;
+  submittedBy: string;
+}
+
+export interface GovernanceCaseReviewedPayload {
+  caseId: string;
+  reason: string;
+  outcome: string;
+  reviewedBy: string;
+  reviewNotes?: string;
+}
+
+export interface GovernanceWarningPayload {
+  caseId: string;
+  reason: string;
+  warningCount: number;
+  reviewedBy: string;
+}
+
+export interface GovernanceViolationPayload {
+  caseId: string;
+  pelanggaranId: string;
+  pelanggaranName: string;
+  severity: string;
+  points: number;
+  reviewedBy: string;
 }
 
 // ── Notification Payload Contracts ──────────────────────────────────────────
@@ -179,30 +219,52 @@ export function getNotificationTemplate(
   event: GovernanceEvent,
 ): NotificationTemplate | null {
   switch (event.type) {
+    // ── Unified Governance Review ──────────────────────────────
+    case 'governance:case_created': {
+      const p = event.payload as unknown as GovernanceCaseCreatedPayload;
+      return {
+        title: 'Kasus Baru Masuk Review',
+        message: `${event.santriName}: "${p.reason}" — sumber: ${p.sourceType === 'manual_report' ? 'Laporan Manual' : 'Deteksi Sistem'}. Menunggu review.`,
+        type: 'info',
+        targetSantriId: event.santriId,
+      };
+    }
+    case 'governance:case_reviewed': {
+      const p = event.payload as unknown as GovernanceCaseReviewedPayload;
+      const outcomeLabel = p.outcome === 'warning' ? 'Peringatan' : 'Pelanggaran Resmi';
+      return {
+        title: 'Hasil Review Kasus',
+        message: `${event.santriName}: kasus "${p.reason}" direview oleh ${p.reviewedBy} → ${outcomeLabel}.`,
+        type: p.outcome === 'warning' ? 'warning' : 'error',
+        targetSantriId: event.santriId,
+      };
+    }
+    case 'governance:warning_issued': {
+      const p = event.payload as unknown as GovernanceWarningPayload;
+      return {
+        title: 'Peringatan Diberikan',
+        message: `${event.santriName} mendapat peringatan: "${p.reason}" (warning ke-${p.warningCount}). Dicatat oleh ${p.reviewedBy}.`,
+        type: 'warning',
+        targetSantriId: event.santriId,
+      };
+    }
+    case 'governance:violation_created': {
+      const p = event.payload as unknown as GovernanceViolationPayload;
+      return {
+        title: 'Pelanggaran Resmi Dibuat',
+        message: `${event.santriName} tercatat pelanggaran: ${p.pelanggaranName} (${p.severity}, ${p.points} poin) — hasil review oleh ${p.reviewedBy}.`,
+        type: 'error',
+        targetSantriId: event.santriId,
+      };
+    }
+
+    // ── Pelanggaran (legacy) ──────────────────────────────────
     case 'pelanggaran:created': {
       const p = event.payload as unknown as PelanggaranCreatedPayload;
       return {
         title: 'Pelanggaran Baru Dicatat',
         message: `${event.santriName} tercatat melanggar: ${p.pelanggaranName} (${p.severity}, ${p.points} poin)`,
         type: 'warning',
-        targetSantriId: event.santriId,
-      };
-    }
-    case 'pelanggaran:confirmed': {
-      const p = event.payload as unknown as PelanggaranCreatedPayload;
-      return {
-        title: 'Pelanggaran Dikonfirmasi',
-        message: `Pelanggaran "${p.pelanggaranName}" untuk ${event.santriName} telah dikonfirmasi.`,
-        type: 'warning',
-        targetSantriId: event.santriId,
-      };
-    }
-    case 'pelanggaran:rejected': {
-      const p = event.payload as unknown as PelanggaranCreatedPayload;
-      return {
-        title: 'Pelanggaran Ditolak',
-        message: `Pelanggaran "${p.pelanggaranName}" untuk ${event.santriName} telah ditolak.`,
-        type: 'info',
         targetSantriId: event.santriId,
       };
     }

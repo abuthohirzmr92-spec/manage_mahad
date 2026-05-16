@@ -22,7 +22,7 @@ export default function MonitoringPage() {
 
   const stats = useMemo(() => ({
     santriAktif: santriList.filter(s => s.status === 'aktif').length,
-    pelanggaranPending: pelanggaranList.filter(p => p.status === 'pending').length,
+    pelanggaranPending: 0, // Pending now tracked via GovernanceCase collection
     asramaAktifCount: asramaList.filter(a => a.status === 'aktif').length,
   }), [santriList, pelanggaranList, asramaList]);
 

@@ -27,16 +27,34 @@ export const RANAH_LABEL: Record<RanahInstansi, string> = {
 };
 
 // ── Pelanggaran status ───────────────────────────────────────────────────────
-export const STATUS_COLORS: Record<Pelanggaran['status'], string> = {
+export const STATUS_COLORS: Record<string, string> = {
   pending:   'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
   confirmed: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
   rejected:  'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400',
 };
 
-export const STATUS_LABEL: Record<Pelanggaran['status'], string> = {
+export const STATUS_LABEL: Record<string, string> = {
   pending:   'Menunggu',
   confirmed: 'Dikonfirmasi',
-  rejected:  'Ditolak',
+  rejected:  'Ditolak (Legacy)',
+};
+
+// ── Governance Review status ──────────────────────────────────────────────────
+export const REVIEW_STATUS_COLORS: Record<string, string> = {
+  pending_review:    'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+  warning:           'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+  official_violation:'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+};
+
+export const REVIEW_STATUS_LABEL: Record<string, string> = {
+  pending_review:    'Menunggu Review',
+  warning:           'Peringatan',
+  official_violation:'Pelanggaran Resmi',
+};
+
+export const SOURCE_TYPE_LABEL: Record<string, string> = {
+  manual_report:    'Laporan Manual',
+  system_detection: 'Deteksi Sistem',
 };
 
 // ── Hukuman status ───────────────────────────────────────────────────────────
