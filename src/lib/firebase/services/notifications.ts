@@ -12,12 +12,15 @@ import {
   orderBy,
   onSnapshot,
   Timestamp,
+  writeBatch,
   type QueryConstraint,
 } from 'firebase/firestore';
 import { docToData, docsToArray } from '@/lib/firebase/utils';
 import { isDemoMode, demoDb } from '@/lib/firebase/demo-data';
 import type { FirestoreNotification } from '@/types/firestore';
 import type { Notification } from '@/types';
+import { notificationEngine } from '@/lib/notification-engine';
+import type { GovernanceEvent } from '@/lib/governance-events';
 
 const COLLECTION = 'notifications';
 
@@ -103,5 +106,88 @@ export const notificationsService = {
   async delete(id: string): Promise<void> {
     if (isDemoMode()) { demoDb.delete(COLLECTION, id); return; }
     await deleteDoc(doc(db, COLLECTION, id));
+  },
+
+  /**
+   * Convert a governance event into a notification doc and write it to Firestore.
+   * Returns the new document ID, or null if the event type has no template.
+   */
+  async createFromEvent(event: GovernanceEvent): Promise<string | null> {
+    const payload = notificationEngine.dispatchFromEvent(event);
+    if (!payload) return null;
+    const id = await this.create(payload);
+    return id;
+  },
+
+  /**
+   * Mark all unread notifications as read, optionally scoped to a user filter.
+   */
+  async markAllAsRead(
+    userFilter?: { targetRole?: string; targetSantriId?: string },
+  ): Promise<void> {
+    if (isDemoMode()) {
+      const all = demoDb.list<Notification>(COLLECTION);
+      const unread = userFilter
+        ? all.filter(
+            (n) =>
+              !n.read &&
+              (userFilter.targetRole ? n.targetRole === userFilter.targetRole : true) &&
+              (userFilter.targetSantriId
+                ? n.targetSantriId === userFilter.targetSantriId
+                : true),
+          )
+        : all.filter((n) => !n.read);
+      await Promise.all(unread.map((n) => this.markAsRead(n.id)));
+      return;
+    }
+
+    const constraints: QueryConstraint[] = [where('read', '==', false)];
+    if (userFilter?.targetRole) constraints.push(where('targetRole', '==', userFilter.targetRole));
+    if (userFilter?.targetSantriId)
+      constraints.push(where('targetSantriId', '==', userFilter.targetSantriId));
+
+    const snap = await getDocs(query(collection(db, COLLECTION), ...constraints));
+    if (snap.empty) return;
+
+    const batch = writeBatch(db);
+    snap.docs.forEach((docSnap) => {
+      batch.update(docSnap.ref, { read: true });
+    });
+    await batch.commit();
+  },
+
+  /**
+   * Delete notifications older than the specified number of days.
+   * Defaults to 30 days.
+   */
+  async deleteOldNotifications(daysOld: number = 30): Promise<void> {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - daysOld);
+
+    if (isDemoMode()) {
+      const all = demoDb.list<Notification>(COLLECTION);
+      const old = all.filter((n) => {
+        try {
+          return new Date(n.createdAt).getTime() < cutoff.getTime();
+        } catch {
+          return false;
+        }
+      });
+      await Promise.all(old.map((n) => this.delete(n.id)));
+      return;
+    }
+
+    const constraints: QueryConstraint[] = [
+      where('createdAt', '<', Timestamp.fromDate(cutoff)),
+    ];
+
+    const snap = await getDocs(query(collection(db, COLLECTION), ...constraints));
+    if (snap.empty) return;
+
+    const batch = writeBatch(db);
+    snap.docs.forEach((docSnap) => {
+      batch.delete(docSnap.ref);
+    });
+    await batch.commit();
   },
 };

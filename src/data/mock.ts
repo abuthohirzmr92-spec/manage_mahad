@@ -270,17 +270,17 @@ export const mockPelanggaran: Pelanggaran[] = [
 export const mockHukuman: Hukuman[] = [
   {
     id: '1', santriId: '1', santriName: 'Muhammad Rizki Aditya',
-    pelanggaranId: '1', type: 'Hafalan Tambahan',
+    pelanggaranId: '1', masterHukumanId: 'mh-1', type: 'Hafalan Tambahan',
     description: 'Menghafal Surah Al-Mulk', startDate: '2025-05-10', endDate: '2025-05-17', status: 'aktif',
   },
   {
     id: '2', santriId: '3', santriName: 'Umar Hadi Pratama',
-    pelanggaranId: '3', type: 'Piket Tambahan',
+    pelanggaranId: '3', masterHukumanId: 'mh-2', type: 'Piket Tambahan',
     description: 'Piket kebersihan selama 1 minggu', startDate: '2025-05-08', endDate: '2025-05-15', status: 'aktif',
   },
   {
     id: '3', santriId: '4', santriName: 'Zaid Ahmad Hidayat',
-    pelanggaranId: '5', type: 'Skorsing',
+    pelanggaranId: '5', masterHukumanId: 'mh-3', type: 'Skorsing',
     description: 'Dipulangkan selama 3 hari', startDate: '2025-05-06', endDate: '2025-05-09', status: 'selesai',
   },
 ];

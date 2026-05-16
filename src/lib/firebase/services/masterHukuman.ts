@@ -63,13 +63,31 @@ export const masterHukumanService = {
     });
   },
 
-  async list(): Promise<MasterHukuman[]> {
-    if (isDemoMode()) return demoDb.list<MasterHukuman>(COLLECTION);
-    const snap = await getDocs(collection(db, COLLECTION));
+  async list(field?: string, value?: unknown): Promise<MasterHukuman[]> {
+    if (isDemoMode()) return demoDb.list<MasterHukuman>(COLLECTION, field, value);
+    const constraints: QueryConstraint[] = [];
+    if (field !== undefined && value !== undefined) {
+      constraints.push(where(field, '==', value));
+    }
+    const snap = await getDocs(query(collection(db, COLLECTION), ...constraints));
     const items = docsToArray<FirestoreMasterHukuman>(snap);
     return items.map((item) =>
       toApp(item as FirestoreMasterHukuman, (item as unknown as { id: string }).id)
     );
+  },
+
+  subscribe(
+    id: string,
+    cb: (data: MasterHukuman | null) => void
+  ): () => void {
+    if (isDemoMode()) {
+      cb(demoDb.get<MasterHukuman>(COLLECTION, id));
+      return () => {};
+    }
+    return onSnapshot(doc(db, COLLECTION, id), (snap) => {
+      const data = docToData<FirestoreMasterHukuman>(snap);
+      cb(data ? toApp(data, snap.id) : null);
+    });
   },
 
   async delete(id: string): Promise<void> {

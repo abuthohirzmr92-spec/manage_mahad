@@ -44,6 +44,12 @@ const SP_COLORS: Record<string, string> = {
   SP3: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
 };
 
+const KARAKTER_COLORS: Record<string, string> = {
+  Baik: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+  'Perlu Perhatian': 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+  Peringatan: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+};
+
 // ---------------------------------------------------------------------------
 // Shared class helpers
 // ---------------------------------------------------------------------------
@@ -165,7 +171,9 @@ export function SantriTable({
               <th className={TH_CLS}>Kelas</th>
               <th className={TH_CLS}>Status</th>
               <th className={TH_CLS}>SP</th>
+              <th className={TH_CLS}>Status Karakter</th>
               <th className={TH_CLS}>Poin Pelanggaran</th>
+              <th className={TH_CLS}>Total Prestasi</th>
               <th className="text-right px-4 py-3 font-medium w-[80px]">Aksi</th>
             </tr>
           </thead>
@@ -224,6 +232,15 @@ export function SantriTable({
                   </span>
                 </td>
 
+                {/* Status Karakter badge */}
+                <td className="px-4 py-3">
+                  <span
+                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${KARAKTER_COLORS[s.statusKarakter]}`}
+                  >
+                    {s.statusKarakter}
+                  </span>
+                </td>
+
                 {/* Violation points progress */}
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
@@ -237,6 +254,14 @@ export function SantriTable({
                     </div>
                     <span className="text-xs font-medium">{s.totalPoinPelanggaran}</span>
                   </div>
+                </td>
+
+                {/* Total Prestasi */}
+                <td className="px-4 py-3">
+                  <span className="inline-flex items-center gap-1 text-sm font-bold text-amber-600 dark:text-amber-400">
+                    <span aria-hidden="true" className="text-xs">&#9733;</span>
+                    {s.totalPrestasi}
+                  </span>
                 </td>
 
                 {/* Action */}
@@ -260,7 +285,7 @@ export function SantriTable({
             {rows.length === 0 && (
               <tr>
                 <td
-                  colSpan={8}
+                  colSpan={10}
                   className="px-4 py-10 text-center text-muted-foreground text-sm"
                 >
                   Tidak ada data santri aktif.

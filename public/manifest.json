@@ -1,0 +1,10 @@
+{
+  "name": "APP MA'HAD - Sistem Manajemen Pesantren",
+  "short_name": "Ma'had",
+  "description": "Boarding School Governance Operating System",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#f97316",
+  "icons": []
+}

@@ -10,10 +10,11 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import type { Santri, MasterPelanggaran, MasterHukuman, PelanggaranSeverity, RanahInstansi } from '@/types';
+import type { Santri, MasterPelanggaran, MasterHukuman, PelanggaranSeverity, RanahInstansi, GlobalTolerancePolicy, JenjangToleranceOverride } from '@/types';
 import { SEVERITY_COLORS, RANAH_LABEL } from './constants';
-import { AlertTriangle, Plus, X, Search, Gavel } from 'lucide-react';
+import { AlertTriangle, Plus, X, Search, Gavel, ShieldAlert } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { resolveToleranceLimit } from '@/lib/policy-engine';
 
 // ── Shared input tokens ────────────────────────────────────────────────────────
 const inputCls = cn(
@@ -51,6 +52,12 @@ interface Props {
   reporterName: string;
   reporterUserId: string;
   reporterRole: string;
+  /** santriId → severity → violation count (for tolerance check) */
+  santriViolationCounts?: Record<string, Record<string, number>>;
+  /** Map santriId → jenjang string (for tolerance lookup) */
+  santriJenjangMap?: Record<string, string>;
+  globalTolerancePolicy?: GlobalTolerancePolicy | null;
+  toleranceOverrides?: JenjangToleranceOverride[];
   onClose: () => void;
   onSave: (records: Array<{
     santriId: string;
@@ -81,6 +88,10 @@ export function CatatPelanggaranModal({
   reporterName,
   reporterUserId,
   reporterRole,
+  santriViolationCounts = {},
+  santriJenjangMap = {},
+  globalTolerancePolicy = null,
+  toleranceOverrides = [],
   onClose,
   onSave,
 }: Props) {
@@ -90,6 +101,10 @@ export function CatatPelanggaranModal({
   const [pelanggaranId, setPelanggaranId] = useState('');
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [notes, setNotes] = useState('');
+
+  // ── Tolerance warning state ──────────────────────────────────────────────
+  const [toleranceWarnings, setToleranceWarnings] = useState<Array<{ santriName: string; severity: string; count: number; limit: number }>>([]);
+  const [showToleranceWarning, setShowToleranceWarning] = useState(false);
 
   // ── Santri multi-select state ─────────────────────────────────────────────
   const [santriSearch, setSantriSearch] = useState('');
@@ -109,6 +124,8 @@ export function CatatPelanggaranModal({
       setSantriSearch('');
       setSelectedSantriIds([]);
       setPunishmentByTingkat({});
+      setToleranceWarnings([]);
+      setShowToleranceWarning(false);
     }
   }, [open]);
 
@@ -198,6 +215,32 @@ export function CatatPelanggaranModal({
     setPunishmentByTingkat({});
   }, [pelanggaranId, selectedSantriIds]);
 
+  // ── Tolerance check ──────────────────────────────────────────────────────
+  const computeToleranceWarnings = useMemo(() => {
+    if (!selectedPelanggaran || selectedSantriIds.length === 0) return [];
+    const severity = selectedPelanggaran.severity;
+    const warnings: Array<{ santriName: string; severity: string; count: number; limit: number }> = [];
+
+    for (const sid of selectedSantriIds) {
+      const s = santriList.find((st) => st.id === sid);
+      if (!s) continue;
+      const jenjang = santriJenjangMap[sid] ?? String(santriTingkatMap[sid] ?? '');
+      const currentCount = santriViolationCounts?.[sid]?.[severity] ?? 0;
+      const limit = resolveToleranceLimit(jenjang, severity, globalTolerancePolicy, toleranceOverrides);
+
+      // limit 0 means no tolerance — violation counts immediately
+      if (limit > 0 && currentCount >= limit) {
+        warnings.push({
+          santriName: s.name,
+          severity,
+          count: currentCount + 1,
+          limit,
+        });
+      }
+    }
+    return warnings;
+  }, [selectedPelanggaran, selectedSantriIds, santriList, santriJenjangMap, santriTingkatMap, santriViolationCounts, globalTolerancePolicy, toleranceOverrides]);
+
   // ── Submit ────────────────────────────────────────────────────────────────
   const canSubmit =
     ranah !== '' &&
@@ -205,8 +248,8 @@ export function CatatPelanggaranModal({
     selectedSantriIds.length > 0 &&
     selectedPelanggaran !== undefined;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const doSave = (e?: React.FormEvent) => {
+    e?.preventDefault();
     if (!canSubmit || !selectedPelanggaran) return;
 
     const records = selectedSantriIds.map((sid) => {
@@ -235,6 +278,20 @@ export function CatatPelanggaranModal({
     });
 
     onSave(records);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!canSubmit || !selectedPelanggaran) return;
+
+    // Check tolerance warnings before proceeding
+    const warnings = computeToleranceWarnings;
+    if (warnings.length > 0) {
+      setToleranceWarnings(warnings);
+      setShowToleranceWarning(true);
+    } else {
+      doSave();
+    }
   };
 
   return (
@@ -478,6 +535,28 @@ export function CatatPelanggaranModal({
           </div>
         </form>
 
+        {/* Tolerance Warning Banner */}
+        {computeToleranceWarnings.length > 0 && (
+          <div className="flex items-start gap-3 p-3 rounded-lg bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800/30">
+            <ShieldAlert className="w-5 h-5 text-red-500 shrink-0 mt-0.5" aria-hidden="true" />
+            <div className="space-y-1">
+              <p className="text-xs font-semibold text-red-700 dark:text-red-400">
+                Peringatan Batas Toleransi
+              </p>
+              <ul className="text-[11px] text-red-600 dark:text-red-300 space-y-0.5 list-disc list-inside">
+                {computeToleranceWarnings.map((w, i) => (
+                  <li key={i}>
+                    {w.santriName}: {w.severity.replace('_', ' ')} ({w.count}/{w.limit})
+                  </li>
+                ))}
+              </ul>
+              <p className="text-[11px] text-red-500">
+                Santri telah melampaui batas toleransi pelanggaran. Pertimbangkan ulang sebelum mencatat.
+              </p>
+            </div>
+          </div>
+        )}
+
         <DialogFooter>
           <Button type="button" variant="ghost" onClick={onClose} className="text-muted-foreground">
             Batal
@@ -488,6 +567,48 @@ export function CatatPelanggaranModal({
               : 'Catat Pelanggaran'}
           </Button>
         </DialogFooter>
+
+        {/* Tolerance Exceeded Confirmation Dialog */}
+        {showToleranceWarning && (
+          <Dialog open={showToleranceWarning} onOpenChange={() => setShowToleranceWarning(false)}>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <div className="flex items-center gap-3 mb-0.5">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 bg-red-500/10 ring-1 ring-red-500/20">
+                    <ShieldAlert className="w-4 h-4 text-red-500" aria-hidden="true" />
+                  </div>
+                  <DialogTitle className="text-base font-semibold">Batas Toleransi Terlampaui</DialogTitle>
+                </div>
+                <DialogDescription className="text-xs text-muted-foreground/80 leading-relaxed">
+                  Santri berikut telah melampaui batas toleransi untuk tingkat pelanggaran ini:
+                </DialogDescription>
+              </DialogHeader>
+              <div className="py-2">
+                <ul className="space-y-2">
+                  {toleranceWarnings.map((w, i) => (
+                    <li key={i} className="flex items-center gap-2 p-2 rounded-lg bg-red-50 dark:bg-red-950/20 text-xs">
+                      <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />
+                      <span className="text-red-700 dark:text-red-300">
+                        <strong>{w.santriName}</strong> — {w.severity.replace('_', ' ')}: {w.count} (batas {w.limit})
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-xs text-muted-foreground mt-3">
+                  Apakah Anda tetap ingin mencatat pelanggaran ini?
+                </p>
+              </div>
+              <DialogFooter>
+                <Button type="button" variant="ghost" onClick={() => setShowToleranceWarning(false)}>
+                  Kembali
+                </Button>
+                <Button type="button" variant="destructive" onClick={() => { setShowToleranceWarning(false); doSave(); }}>
+                  Tetap Catat
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
       </DialogContent>
     </Dialog>
   );

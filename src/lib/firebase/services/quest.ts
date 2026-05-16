@@ -100,4 +100,72 @@ export const questService = {
     if (isDemoMode()) { demoDb.delete(COLLECTION, id); return; }
     await deleteDoc(doc(db, COLLECTION, id));
   },
+
+  // ── Agent 4: Approval & Status Transitions ────────────────────────────────
+
+  /** Approve a pending quest — sets approvalStatus='approved' and status='available'. */
+  async approve(id: string, approvedBy: string): Promise<void> {
+    if (isDemoMode()) {
+      demoDb.update(COLLECTION, id, {
+        approvalStatus: 'approved',
+        status: 'available',
+        approvedBy,
+      } as Record<string, unknown>);
+      return;
+    }
+    await updateDoc(doc(db, COLLECTION, id), {
+      approvalStatus: 'approved',
+      status: 'available',
+      approvedBy,
+      updatedAt: Timestamp.now(),
+    });
+  },
+
+  /** Reject a pending quest — sets approvalStatus='rejected' and status='expired'. */
+  async reject(id: string, rejectedBy: string): Promise<void> {
+    if (isDemoMode()) {
+      demoDb.update(COLLECTION, id, {
+        approvalStatus: 'rejected',
+        status: 'expired',
+        approvedBy: rejectedBy,
+      } as Record<string, unknown>);
+      return;
+    }
+    await updateDoc(doc(db, COLLECTION, id), {
+      approvalStatus: 'rejected',
+      status: 'expired',
+      approvedBy: rejectedBy,
+      updatedAt: Timestamp.now(),
+    });
+  },
+
+  /** Mark a quest as completed with 100% progress. */
+  async complete(id: string): Promise<void> {
+    if (isDemoMode()) {
+      demoDb.update(COLLECTION, id, {
+        status: 'completed',
+        progress: 100,
+      } as Record<string, unknown>);
+      return;
+    }
+    await updateDoc(doc(db, COLLECTION, id), {
+      status: 'completed',
+      progress: 100,
+      updatedAt: Timestamp.now(),
+    });
+  },
+
+  /** Start a quest — sets status='inProgress'. */
+  async startQuest(id: string): Promise<void> {
+    if (isDemoMode()) {
+      demoDb.update(COLLECTION, id, {
+        status: 'inProgress',
+      } as Record<string, unknown>);
+      return;
+    }
+    await updateDoc(doc(db, COLLECTION, id), {
+      status: 'inProgress',
+      updatedAt: Timestamp.now(),
+    });
+  },
 };

@@ -6,6 +6,8 @@ import { cn } from '@/lib/utils';
 import { useSidebarStore } from '@/store/sidebar-store';
 import { useAuthStore } from '@/store/auth-store';
 import { getMenuForRole } from '@/config/navigation';
+import { useCollection } from '@/hooks';
+import type { Notification } from '@/types';
 import {
   LayoutDashboard, Users, Building2, BookOpen, AlertTriangle,
   Gavel, Trophy, Activity, Bell, Settings, ChevronLeft,
@@ -26,6 +28,13 @@ export function Sidebar() {
   const { isCollapsed, isMobileOpen, toggle, setMobileOpen } = useSidebarStore();
   const { user } = useAuthStore();
   const menuItems = getMenuForRole(user?.role ?? 'admin');
+
+  // Real-time unread notification count
+  const { data: allNotifs } = useCollection<Notification>('notifications', [], { realtime: true });
+  const filteredNotifs = user?.role === 'wali' && user?.childSantriId
+    ? allNotifs.filter((n) => n.targetSantriId === user.childSantriId)
+    : allNotifs;
+  const unreadCount = filteredNotifs.filter((n) => !n.read).length;
 
   return (
     <TooltipProvider delay={0}>
@@ -60,6 +69,7 @@ export function Sidebar() {
             {menuItems.map((item) => {
               const Icon = iconMap[item.icon] || LayoutDashboard;
               const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
+              const isNotifItem = item.icon === 'Bell';
               const linkContent = (
                 <Link href={item.href} onClick={() => setMobileOpen(false)}
                   className={cn(
@@ -69,8 +79,24 @@ export function Sidebar() {
                      : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground',
                     isCollapsed && 'justify-center px-2'
                   )}>
-                  <Icon className={cn('shrink-0 transition-colors duration-200', isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground', isCollapsed ? 'w-5 h-5' : 'w-4 h-4')} />
-                  {!isCollapsed && <span className="truncate">{item.title}</span>}
+                  <div className={cn(isNotifItem && isCollapsed ? 'relative' : '')}>
+                    <Icon className={cn('shrink-0 transition-colors duration-200', isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground', isCollapsed ? 'w-5 h-5' : 'w-4 h-4')} />
+                    {isNotifItem && isCollapsed && unreadCount > 0 && (
+                      <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-[16px] h-4 text-[9px] font-bold bg-destructive text-destructive-foreground rounded-full px-0.5">
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                      </span>
+                    )}
+                  </div>
+                  {!isCollapsed && (
+                    <>
+                      <span className="truncate">{item.title}</span>
+                      {isNotifItem && unreadCount > 0 && (
+                        <span className="ml-auto flex items-center justify-center min-w-[20px] h-5 text-[10px] font-bold bg-destructive text-destructive-foreground rounded-full px-1.5">
+                          {unreadCount > 99 ? '99+' : unreadCount}
+                        </span>
+                      )}
+                    </>
+                  )}
                 </Link>
               );
               if (isCollapsed) {

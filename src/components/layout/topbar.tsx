@@ -13,9 +13,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Bell, Menu, Moon, Sun, LogOut, User, Shield, ChevronDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useRouter } from 'next/navigation';
 import { useCollection } from '@/hooks';
 import type { Notification } from '@/types';
-import { mockNotifications } from '@/data/mock';
+import { notificationsService } from '@/lib/firebase/services';
 import { cn } from '@/lib/utils';
 
 const roleLabels: Record<UserRole, string> = {
@@ -45,11 +46,10 @@ export function Topbar() {
   const { user, logout, switchRole } = useAuthStore();
   const { setMobileOpen } = useSidebarStore();
   const { theme, setTheme } = useTheme();
+  const router = useRouter();
 
-  // Load notifications from Firebase, fall back to mock data in demo mode
-  const isDemo = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
-  const { data: fbNotifications } = useCollection<Notification>('notifications', [], { realtime: true });
-  const rawNotifications = isDemo ? mockNotifications : fbNotifications;
+  // Load notifications from Firebase with realtime subscription
+  const { data: rawNotifications } = useCollection<Notification>('notifications', [], { realtime: true });
 
   // Wali only sees their child's notifications
   const notifications = user?.role === 'wali' && user.childSantriId
@@ -94,7 +94,16 @@ export function Topbar() {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               {notifications.slice(0, 5).map((notif) => (
-                <DropdownMenuItem key={notif.id} className="cursor-pointer py-0">
+                <DropdownMenuItem
+                  key={notif.id}
+                  className="cursor-pointer py-0"
+                  onClick={async () => {
+                    if (!notif.read) {
+                      await notificationsService.markAsRead(notif.id);
+                    }
+                    router.push('/dashboard/notifikasi');
+                  }}
+                >
                   <div className="flex flex-col gap-1 py-3 w-full">
                     <div className="flex items-center gap-2">
                       {!notif.read && <span className="w-2 h-2 rounded-full bg-primary shrink-0" />}
@@ -105,6 +114,13 @@ export function Topbar() {
                 </DropdownMenuItem>
               ))}
             </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => router.push('/dashboard/notifikasi')}
+              className="cursor-pointer justify-center text-sm text-primary font-medium"
+            >
+              Lihat Semua
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 

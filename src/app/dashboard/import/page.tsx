@@ -27,19 +27,14 @@ const importTypes = [
   { id: 'staff', label: 'Staff', icon: FileText },
 ];
 
-const mockPreviewData = [
-  { id: 1, nama: 'Ahmad Syafiq', nis: '2024001', role: '10A', status: 'valid' },
-  { id: 2, nama: 'Budi Santoso', nis: '2024002', role: '10A', status: 'duplicate' },
-  { id: 3, nama: 'Citra Kirana', nis: '-', role: '10B', status: 'missing' },
-  { id: 4, nama: 'Deni Ramadhan', nis: '2024004', role: 'Unregistered', status: 'warning' },
-  { id: 5, nama: 'Eko Prasetyo', nis: '2024005', role: '11A', status: 'valid' },
-];
+const mockPreviewData: {
+  id: number; nama: string; nis: string; role: string; status: string;
+}[] = [];
 
-const mockImportHistory = [
-  { id: '1', fileName: 'Santri_Batch_2.csv', date: '2025-05-10', importedBy: 'Admin Utama', totalData: 120, status: 'success' },
-  { id: '2', fileName: 'Data_Guru_Q1.xlsx', date: '2025-05-09', importedBy: 'Ustadz Hasan', totalData: 45, status: 'success' },
-  { id: '3', fileName: 'Pelanggaran_Update.csv', date: '2025-05-08', importedBy: 'Admin Utama', totalData: 12, status: 'error', reason: 'Format kolom tidak sesuai standard' },
-];
+const mockImportHistory: {
+  id: string; fileName: string; date: string; importedBy: string;
+  totalData: number; status: string; reason?: string;
+}[] = [];
 
 interface ImportResult {
   success: number;

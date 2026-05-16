@@ -10,8 +10,7 @@ import { teacherAssignmentService } from '@/lib/firebase/services';
 import { getJenjangByInstansi } from '@/lib/academic-structure';
 import type { Instansi, MasterJenjang, MasterTingkat } from '@/types';
 import { INSTANSI_ORDER, INSTANSI_LABEL } from '@/types';
-import type { Subject } from '@/data/mock-mapel';
-import type { Kelas } from '@/data/mock-kelas/types';
+import type { Mapel, Kelas } from '@/types/academic';
 import type { TeacherAssignment } from '@/types';
 import { getTingkatLabel, buildTingkatLabelMap } from '@/lib/progression-label';
 import { cn } from '@/lib/utils';
@@ -29,7 +28,7 @@ export default function DistribusiGuruPage() {
   const searchParams = useSearchParams();
 
   // ── Data ────────────────────────────────────────────────────────────────
-  const { data: allMapel, loading: mapelLoading } = useCollection<Subject>('mapel', [], { realtime: true });
+  const { data: allMapel, loading: mapelLoading } = useCollection<Mapel>('mapel', [], { realtime: true });
   const { data: allKelas, loading: kelasLoading } = useCollection<Kelas>('kelas');
   const { data: allAssignments } = useCollection<TeacherAssignment>('teacherAssignments');
   const { data: jenjangList, loading: jenjangLoading } = useCollection<MasterJenjang>('masterJenjang');

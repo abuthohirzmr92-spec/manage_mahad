@@ -104,4 +104,14 @@ export const pelanggaranService = {
     if (isDemoMode()) { demoDb.delete(COLLECTION, id); return; }
     await deleteDoc(doc(db, COLLECTION, id));
   },
+
+  /** Confirm a pelanggaran — set status to 'confirmed'. */
+  async confirm(id: string): Promise<void> {
+    await pelanggaranService.update(id, { status: 'confirmed' });
+  },
+
+  /** Reject a pelanggaran — set status to 'rejected'. */
+  async reject(id: string): Promise<void> {
+    await pelanggaranService.update(id, { status: 'rejected' });
+  },
 };

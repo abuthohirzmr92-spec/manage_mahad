@@ -16,23 +16,15 @@ import { mapelService } from '@/lib/firebase/services';
 import { getJenjangByInstansi, jenjangToInstansi } from '@/lib/academic-structure';
 import type { Instansi, MasterJenjang, MasterTingkat } from '@/types';
 import { INSTANSI_ORDER } from '@/types';
-import type { Subject } from '@/data/mock-mapel';
+import type { Mapel, Kelas } from '@/types/academic';
 import type { TeacherAssignment } from '@/types';
-
-// ── Kelas lookup by tingkat ──────────────────────────────────────────────
-import { mockKelasFormal, mockKelasDiniyah, mockKelasQuran } from '@/data/mock-kelas';
-const allClassData = [...mockKelasFormal, ...mockKelasDiniyah, ...mockKelasQuran];
-const kelasByTingkat: Record<string, { tingkat: number; name: string }[]> = {};
-for (const k of allClassData) {
-  const key = String(k.tingkat);
-  (kelasByTingkat[key] ??= []).push(k);
-}
 
 export default function MataPelajaranPage() {
   const router = useRouter();
 
   // ── Data ──────────────────────────────────────────────────────────────
-  const { data: allMapel, loading: mapelLoading, error: mapelError } = useCollection<Subject>('mapel', [], { realtime: true });
+  const { data: allMapel, loading: mapelLoading, error: mapelError } = useCollection<Mapel>('mapel', [], { realtime: true });
+  const { data: allKelas } = useCollection<Kelas>('kelas');
   const { data: assignments } = useCollection<TeacherAssignment>('teacherAssignments');
   const { data: jenjangList, loading: jenjangLoading, error: jenjangError } = useCollection<MasterJenjang>('masterJenjang');
   const { data: tingkatList } = useCollection<MasterTingkat>('masterTingkat');
@@ -110,7 +102,7 @@ export default function MataPelajaranPage() {
   // ── Create modal ──────────────────────────────────────────────────────
   const [showCreate, setShowCreate] = useState(false);
 
-  const handleCreate = useCallback(async (data: Omit<Subject, 'id'>) => {
+  const handleCreate = useCallback(async (data: Omit<Mapel, 'id'>) => {
     await mapelService.create({
       name: data.name,
       code: data.code,
@@ -122,13 +114,13 @@ export default function MataPelajaranPage() {
   }, []);
 
   // ── Edit modal ────────────────────────────────────────────────────────
-  const [editTarget, setEditTarget] = useState<Subject | null>(null);
+  const [editTarget, setEditTarget] = useState<Mapel | null>(null);
 
-  const handleEditRequest = useCallback((subject: Subject) => {
+  const handleEditRequest = useCallback((subject: Mapel) => {
     setEditTarget(subject);
   }, []);
 
-  const handleEditSave = useCallback(async (updated: Subject) => {
+  const handleEditSave = useCallback(async (updated: Mapel) => {
     await mapelService.update(updated.id, {
       name: updated.name,
       code: updated.code,
@@ -140,9 +132,9 @@ export default function MataPelajaranPage() {
   }, []);
 
   // ── Delete modal ──────────────────────────────────────────────────────
-  const [deleteTarget, setDeleteTarget] = useState<Subject | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Mapel | null>(null);
 
-  const handleDeleteRequest = useCallback((subject: Subject) => {
+  const handleDeleteRequest = useCallback((subject: Mapel) => {
     setDeleteTarget(subject);
   }, []);
 
@@ -153,10 +145,20 @@ export default function MataPelajaranPage() {
   }, [deleteTarget]);
 
   // ── Navigate to distribusi guru ───────────────────────────────────────
-  const handleAssignNavigate = useCallback((subject: Subject) => {
+  const handleAssignNavigate = useCallback((subject: Mapel) => {
     const inst = jenjangToInstansi(jenjangList, subject.jenjang);
     router.push(`/dashboard/distribusi-guru?instansi=${inst ?? activeInstansi}&jenjang=${encodeURIComponent(subject.jenjang)}&tingkat=${subject.tingkat}`);
   }, [router, activeInstansi, jenjangList]);
+
+  // ── Kelas lookup by tingkat (live data) ──────────────────────────────────
+  const kelasByTingkat = useMemo(() => {
+    const map: Record<string, Kelas[]> = {};
+    for (const k of allKelas) {
+      const key = String(k.tingkat);
+      (map[key] ??= []).push(k);
+    }
+    return map;
+  }, [allKelas]);
 
   // ── Grouped data: jenjang → tingkat → subjects ─────────────────────────
   const groupedData = useMemo(() => {
@@ -165,7 +167,7 @@ export default function MataPelajaranPage() {
       data.sort((a, b) => (localOrder[a.id] ?? 0) - (localOrder[b.id] ?? 0));
     }
 
-    const result: { tingkat: number; jenjang: string; classNames: string; subjects: Subject[] }[] = [];
+    const result: { tingkat: number; jenjang: string; classNames: string; subjects: Mapel[] }[] = [];
 
     for (const jenjang of instansiJenjang) {
       const byJenjang = data.filter((s) => s.jenjang === jenjang);
@@ -179,7 +181,7 @@ export default function MataPelajaranPage() {
       }
     }
     return result.filter((g) => g.subjects.length > 0);
-  }, [mapelByInstansi, instansiJenjang, localOrder]);
+  }, [mapelByInstansi, instansiJenjang, localOrder, kelasByTingkat]);
 
   if (loading) return <LoadingState type="card" count={6} />;
   if (error) return <ErrorState message="Gagal memuat data mata pelajaran." onRetry={() => window.location.reload()} />;

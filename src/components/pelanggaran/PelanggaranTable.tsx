@@ -1,6 +1,6 @@
 'use client';
 
-import { Search } from 'lucide-react';
+import { Search, CheckCircle, XCircle, Eye } from 'lucide-react';
 import {
   SEVERITY_COLORS,
   STATUS_COLORS,
@@ -20,6 +20,9 @@ interface PelanggaranTableProps {
   onSearchChange: (value: string) => void;
   onStatusChange: (value: StatusFilter) => void;
   onSeverityChange: (value: SeverityFilter) => void;
+  onConfirm?: (id: string) => void;
+  onReject?: (id: string) => void;
+  onDetail?: (item: Pelanggaran) => void;
 }
 
 export function PelanggaranTable({
@@ -30,6 +33,9 @@ export function PelanggaranTable({
   onSearchChange,
   onStatusChange,
   onSeverityChange,
+  onConfirm,
+  onReject,
+  onDetail,
 }: PelanggaranTableProps) {
   return (
     <>
@@ -95,6 +101,9 @@ export function PelanggaranTable({
               <th className="text-left px-4 py-3 font-medium">Tanggal</th>
               <th className="text-left px-4 py-3 font-medium">Status</th>
               <th className="text-left px-4 py-3 font-medium">Hukuman</th>
+              {(onConfirm || onReject || onDetail) && (
+                <th className="text-left px-4 py-3 font-medium">Aksi</th>
+              )}
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -142,11 +151,47 @@ export function PelanggaranTable({
                     {p.statusHukuman}
                   </span>
                 </td>
+                {(onConfirm || onReject || onDetail) && (
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-1">
+                      {onDetail && (
+                        <button
+                          type="button"
+                          onClick={() => onDetail(p)}
+                          className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                          title="Lihat detail"
+                        >
+                          <Eye className="w-4 h-4" aria-hidden="true" />
+                        </button>
+                      )}
+                      {p.status === 'pending' && onConfirm && (
+                        <button
+                          type="button"
+                          onClick={() => onConfirm(p.id)}
+                          className="p-1.5 rounded-md text-emerald-600 hover:text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors"
+                          title="Konfirmasi"
+                        >
+                          <CheckCircle className="w-4 h-4" aria-hidden="true" />
+                        </button>
+                      )}
+                      {p.status === 'pending' && onReject && (
+                        <button
+                          type="button"
+                          onClick={() => onReject(p.id)}
+                          className="p-1.5 rounded-md text-red-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                          title="Tolak"
+                        >
+                          <XCircle className="w-4 h-4" aria-hidden="true" />
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                )}
               </tr>
             ))}
             {data.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-10 text-center text-muted-foreground text-sm">
+                <td colSpan={(onConfirm || onReject || onDetail) ? 8 : 7} className="px-4 py-10 text-center text-muted-foreground text-sm">
                   Tidak ada pelanggaran ditemukan.
                 </td>
               </tr>

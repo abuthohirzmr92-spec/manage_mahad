@@ -187,11 +187,13 @@ export interface FirestoreHukuman {
   santriId: string;
   santriName: string;
   pelanggaranId: string;
-  type: string;
+  masterHukumanId: string;    // FK ke MasterHukuman
+  type: string;                // display name
   description: string;
   startDate: string;
   endDate: string;
   status: 'aktif' | 'selesai' | 'dibatalkan';
+  executorId?: string;        // yang mengeksekusi
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }

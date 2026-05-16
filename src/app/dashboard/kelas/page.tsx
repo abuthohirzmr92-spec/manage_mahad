@@ -13,10 +13,7 @@ import { getJenjangByInstansi } from '@/lib/academic-structure';
 import type { Instansi, MasterJenjang, MasterTingkat } from '@/types';
 import { INSTANSI_ORDER, INSTANSI_LABEL } from '@/types';
 
-import {
-  Kelas,
-  JenjangGroup,
-} from '@/data/mock-kelas';
+import type { Kelas, JenjangGroup } from '@/types/academic';
 
 import { KelasTabs } from '@/components/kelas/KelasTabs';
 import { KelasClusterSection } from '@/components/kelas/KelasClusterSection';
