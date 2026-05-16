@@ -99,21 +99,36 @@ export default function ImportPage() {
     setIsUploading(true);
     setUploadProgress(10);
 
-    Papa.parse<Record<string, string>>(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: (results) => {
-        setUploadProgress(50);
-        handleFileParsed(results);
-        setUploadProgress(100);
-        setIsUploading(false);
-      },
-      error: (error) => {
-        setImportError(`Gagal membaca file: ${error.message}`);
-        setIsUploading(false);
-      },
-      transformHeader: (h) => h.toLowerCase().replace(/[^a-z0-9_]/g, '_'),
-    });
+    // Read as text first to strip Excel BOM + sep= directive
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const raw = (e.target?.result as string) || '';
+      // Strip BOM (U+FEFF) and Excel sep= directive line
+      const cleaned = raw
+        .replace(/^﻿/, '')
+        .replace(/^sep=.*\r?\n/, '');
+
+      Papa.parse<Record<string, string>>(cleaned, {
+        header: true,
+        skipEmptyLines: true,
+        complete: (results) => {
+          setUploadProgress(50);
+          handleFileParsed(results);
+          setUploadProgress(100);
+          setIsUploading(false);
+        },
+        error: (error: Error) => {
+          setImportError(`Gagal membaca file: ${error.message}`);
+          setIsUploading(false);
+        },
+        transformHeader: (h) => h.toLowerCase().replace(/[^a-z0-9_]/g, '_'),
+      });
+    };
+    reader.onerror = () => {
+      setImportError('Gagal membaca file');
+      setIsUploading(false);
+    };
+    reader.readAsText(file);
   }, [handleFileParsed]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -210,11 +225,23 @@ export default function ImportPage() {
 
   const handleDownloadTemplate = useCallback(() => {
     const templates: Record<string, string> = {
-      santri: 'nis,name,asrama,kamar,kelas,gender,angkatan_masuk,asal_kota,asal_provinsi,join_date,wali_name,wali_phone\n1001,Ahmad Fauzi,Asrama A,Kamar 1,Kelas 10A,L,2025,Malang,Jawa Timur,2025-07-01,Bapak Hasan,081234567890',
-      guru: 'name,nip,ranah_instansi\nUstadz Mahmud,19850115-023,madin',
+      santri: `nis,name,asrama,kamar,kelas,gender,angkatan_masuk,asal_kota,asal_provinsi,join_date,wali_name,wali_phone
+1001,Ahmad Fauzi,"Asrama A","Kamar 1","Kelas 10A",L,2025,Malang,"Jawa Timur",2025-07-01,"Bapak Hasan",081234567890`,
+      guru: `name,nip,ranah_instansi
+"Ustadz Mahmud",19850115-023,madin`,
+      wali: `name,childSantriNis
+"Bapak Wali",1001`,
+      pelanggaran: `santriNis,jenis,deskripsi,tanggal
+1001,Ringan,"Terlambat sholat subuh",2025-07-15`,
+      asrama: `name,kapasitas,lokasi
+"Asrama Al-Farabi",50,"Lantai 1 Gedung Timur"`,
+      staff: `name,role,email
+"Staff Baru",staff,staff@example.com`,
     };
-    const csv = templates[selectedType] || 'nama,deskripsi\nContoh,Isi data di sini';
-    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+    const csv = templates[selectedType] || 'nama,deskripsi\nContoh,"Isi data di sini"';
+    // BOM UTF-8 + sep=, directive agar Excel paksa pakai koma sebagai delimiter
+    const content = 'sep=,\r\n' + csv;
+    const blob = new Blob(['﻿' + content], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
