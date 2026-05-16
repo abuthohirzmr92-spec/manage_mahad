@@ -104,10 +104,11 @@ export function Sidebar() {
                         const linkContent = (
                           <Link href={item.href} onClick={() => setMobileOpen(false)}
                             className={cn(
-                              'group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200',
+                              'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200',
+                              'border border-transparent',
                               isActive
-                               ? 'bg-sidebar-accent text-sidebar-accent-foreground shadow-sm dark:shadow-[0_0_8px_rgba(251,146,60,0.08)] dark:border dark:border-primary/20'
-                               : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground',
+                                ? 'bg-primary/5 text-primary border-primary/15 shadow-[0_0_16px_rgba(251,146,60,0.06)]'
+                                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:border-primary/10',
                               'justify-center px-2'
                             )}>
                             <div className={cn(isNotifItem ? 'relative' : '')}>
@@ -137,16 +138,19 @@ export function Sidebar() {
                         type="button"
                         onClick={() => toggleGroup(group.title)}
                         className={cn(
-                          'w-full flex items-center gap-2 px-3 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-widest transition-colors',
+                          'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold',
+                          'transition-all duration-300 ease-out',
+                          'border border-transparent',
                           isActiveGroup
-                            ? 'text-sidebar-foreground/80'
-                            : 'text-muted-foreground/60 hover:text-sidebar-foreground/60'
+                            ? 'bg-primary/5 border-primary/15 text-primary shadow-[0_0_20px_rgba(251,146,60,0.06)]'
+                            : 'text-sidebar-foreground/75 hover:bg-sidebar-accent/40 hover:text-sidebar-foreground hover:shadow-[0_2px_12px_rgba(251,146,60,0.04)] hover:border-primary/10'
                         )}
                       >
-                        {GroupIcon && <GroupIcon className="w-3.5 h-3.5 shrink-0" />}
+                        {GroupIcon && <GroupIcon className={cn('w-4 h-4 shrink-0 transition-colors duration-300', isActiveGroup ? 'text-primary' : 'text-muted-foreground')} />}
                         <span className="flex-1 text-left truncate">{group.title}</span>
                         <ChevronDown className={cn(
-                          'w-3 h-3 shrink-0 transition-transform duration-200',
+                          'w-3.5 h-3.5 shrink-0 transition-transform duration-300',
+                          isActiveGroup ? 'text-primary/60' : 'text-muted-foreground/40',
                           isExpanded && 'rotate-180'
                         )} />
                       </button>
@@ -164,10 +168,12 @@ export function Sidebar() {
                             return (
                               <Link key={item.href} href={item.href} onClick={() => setMobileOpen(false)}
                                 className={cn(
-                                  'group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200',
+                                  'flex items-center gap-3 rounded-lg px-3 py-2 ml-2.5 text-[13px] font-medium',
+                                  'transition-all duration-200 ease-out',
+                                  'border border-transparent',
                                   isActive
-                                   ? 'bg-sidebar-accent text-sidebar-accent-foreground shadow-sm dark:shadow-[0_0_8px_rgba(251,146,60,0.08)] dark:border dark:border-primary/20'
-                                   : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground',
+                                    ? 'bg-primary/8 text-primary border-primary/15 shadow-[0_0_16px_rgba(251,146,60,0.05)]'
+                                    : 'text-sidebar-foreground/65 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:border-primary/8',
                                 )}>
                                 <Icon className={cn('shrink-0 w-4 h-4 transition-colors duration-200', isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground')} />
                                 <span className="truncate">{item.title}</span>
