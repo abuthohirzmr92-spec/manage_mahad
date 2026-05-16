@@ -15,7 +15,6 @@ import {
   Stethoscope, FileText, Upload, Home,
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -65,7 +64,7 @@ export function Sidebar() {
         </div>
 
         {/* Nav */}
-        <ScrollArea className="flex-1 py-3">
+        <div className="flex-1 overflow-y-auto py-3">
           <nav className="px-2 space-y-4">
             {menuGroups.map((group) => {
               const GroupIcon = iconMap[group.icon];
@@ -129,7 +128,7 @@ export function Sidebar() {
               );
             })}
           </nav>
-        </ScrollArea>
+        </div>
 
         {/* Collapse Toggle */}
         <div className="hidden lg:flex items-center justify-center border-t border-sidebar-border p-2 shrink-0">
