@@ -1,6 +1,7 @@
 'use client';
 
 import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface ErrorStateProps {
   message?: string;
@@ -19,13 +20,10 @@ export function ErrorState({
       <h3 className="text-lg font-semibold text-foreground mb-1">Terjadi Kesalahan</h3>
       <p className="text-sm text-muted-foreground max-w-sm mb-4">{message}</p>
       {onRetry && (
-        <button
-          onClick={onRetry}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
-        >
+        <Button onClick={onRetry} variant="default">
           <RefreshCw className="w-4 h-4" />
           Coba Lagi
-        </button>
+        </Button>
       )}
     </div>
   );

@@ -36,7 +36,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-background">
       <Sidebar />
-      <div className={cn('transition-all duration-300 ease-in-out', isCollapsed ? 'lg:pl-[68px]' : 'lg:pl-[260px]')}>
+      <div className={cn('transition-all duration-300 ease-in-out', isCollapsed ? 'lg:pl-[var(--sidebar-width-collapsed)]' : 'lg:pl-[var(--sidebar-width)]')}>
         <Topbar />
         <main className="p-4 lg:p-6">
           <Breadcrumb />

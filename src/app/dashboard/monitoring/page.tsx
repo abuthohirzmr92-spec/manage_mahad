@@ -7,8 +7,9 @@ import { StatusBadge } from '@/components/shared/status-badge';
 import { LoadingState } from '@/components/shared/loading-state';
 import { ErrorState } from '@/components/shared/error-state';
 import { EmptyState } from '@/components/shared/empty-state';
+import { DashboardShell, StatsGrid, ChartRow, ChartContainer } from '@/components/shared/dashboard-shell';
 import { useCollection } from '@/hooks';
-import { Activity, TrendingDown, TrendingUp, Users, AlertTriangle, Building2, AlertCircle } from 'lucide-react';
+import { Activity, Users, AlertTriangle, Building2, AlertCircle } from 'lucide-react';
 import type { Santri, Pelanggaran, Asrama, Notification } from '@/types';
 
 export default function MonitoringPage() {
@@ -53,66 +54,52 @@ export default function MonitoringPage() {
 
   if (loading) {
     return (
-      <div className="space-y-6">
+      <DashboardShell>
         <PageHeader
           title="Monitoring"
           description="Pantau aktivitas dan statistik pesantren secara real-time"
         />
         <LoadingState type="stats" count={4} />
         <LoadingState type="card" count={2} />
-      </div>
+      </DashboardShell>
     );
   }
 
   if (error) {
     return (
-      <div className="space-y-6">
+      <DashboardShell>
         <PageHeader
           title="Monitoring"
           description="Pantau aktivitas dan statistik pesantren secara real-time"
         />
         <ErrorState message={error.message} />
-      </div>
+      </DashboardShell>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <DashboardShell>
       <PageHeader
         title="Monitoring"
         description="Pantau aktivitas dan statistik pesantren secara real-time"
       />
 
-      {/* Overview Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <StatsGrid>
         <StatsCard title="Santri Aktif" value={stats.santriAktif} icon={Users} trend={{ value: 2.4, label: 'bulan ini' }} />
         <StatsCard title="Pelanggaran Baru" value={stats.pelanggaranPending} icon={AlertTriangle} iconClassName="bg-amber-500/10" description="Menunggu konfirmasi" />
         <StatsCard title="Asrama Terisi" value={`${stats.asramaAktifCount} aktif`} icon={Building2} iconClassName="bg-blue-500/10" />
         <StatsCard title="Aktivitas Hari Ini" value={notificationList.length > 0 ? notificationList.length : 18} icon={Activity} iconClassName="bg-purple-500/10" trend={{ value: 12, label: 'dari kemarin' }} />
-      </div>
+      </StatsGrid>
 
-      {/* Charts Placeholder */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <ChartRow>
         <PageCard title="Tren Pelanggaran" description="30 hari terakhir">
-          <div className="h-64 flex items-center justify-center text-muted-foreground border border-dashed border-border rounded-lg">
-            <div className="text-center">
-              <TrendingDown className="w-10 h-10 mx-auto mb-2 opacity-30" />
-              <p className="text-sm">Chart akan ditampilkan di sini</p>
-              <p className="text-xs text-muted-foreground/70">Integrasi chart library coming soon</p>
-            </div>
-          </div>
+          <ChartContainer />
         </PageCard>
 
         <PageCard title="Distribusi Pelanggaran per Asrama" description="Bulan ini">
-          <div className="h-64 flex items-center justify-center text-muted-foreground border border-dashed border-border rounded-lg">
-            <div className="text-center">
-              <TrendingUp className="w-10 h-10 mx-auto mb-2 opacity-30" />
-              <p className="text-sm">Chart akan ditampilkan di sini</p>
-              <p className="text-xs text-muted-foreground/70">Integrasi chart library coming soon</p>
-            </div>
-          </div>
+          <ChartContainer />
         </PageCard>
-      </div>
+      </ChartRow>
 
       {/* Recent Activity Log */}
       <PageCard title="Log Aktivitas Terbaru" description="Aktivitas terbaru di sistem">
@@ -137,6 +124,6 @@ export default function MonitoringPage() {
           </div>
         )}
       </PageCard>
-    </div>
+    </DashboardShell>
   );
 }

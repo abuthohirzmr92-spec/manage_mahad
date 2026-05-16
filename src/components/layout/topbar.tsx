@@ -4,6 +4,7 @@ import { useAuthStore } from '@/store/auth-store';
 import { useSidebarStore } from '@/store/sidebar-store';
 import { useTheme } from 'next-themes';
 import { UserRole } from '@/types';
+import { roleLabels, roleColors } from '@/config/theme';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button, buttonVariants } from '@/components/ui/button';
 import {
@@ -18,29 +19,6 @@ import { useCollection } from '@/hooks';
 import type { Notification } from '@/types';
 import { notificationsService } from '@/lib/firebase/services';
 import { cn } from '@/lib/utils';
-
-const roleLabels: Record<UserRole, string> = {
-  admin: 'Administrator',
-  musyrif: 'Musyrif',
-  wali: 'Wali Santri',
-  santri: 'Santri',
-  guru: 'Guru',
-  staff: 'Staff',
-  wali_kelas: 'Wali Kelas',
-  kepala_kesiswaan: 'Kepala Kesiswaan',
-  alumni: 'Alumni'
-};
-const roleColors: Record<UserRole, string> = {
-  admin: 'bg-red-500/10 text-red-700 dark:text-red-400',
-  musyrif: 'bg-blue-500/10 text-blue-700 dark:text-blue-400',
-  wali: 'bg-green-500/10 text-green-700 dark:text-green-400',
-  santri: 'bg-amber-500/10 text-amber-700 dark:text-amber-400',
-  guru: 'bg-cyan-500/10 text-cyan-700 dark:text-cyan-400',
-  staff: 'bg-slate-500/10 text-slate-700 dark:text-slate-400',
-  wali_kelas: 'bg-indigo-500/10 text-indigo-700 dark:text-indigo-400',
-  kepala_kesiswaan: 'bg-purple-500/10 text-purple-700 dark:text-purple-400',
-  alumni: 'bg-zinc-500/10 text-zinc-700 dark:text-zinc-400',
-};
 
 export function Topbar() {
   const { user, logout, switchRole } = useAuthStore();
@@ -60,7 +38,7 @@ export function Topbar() {
   const initials = user?.name?.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() || 'AD';
 
   return (
-    <header className="sticky top-0 z-30 flex items-center h-16 border-b border-border dark:border-white/[0.07] bg-background/80 dark:bg-black/30 backdrop-blur-xl px-4 lg:px-6">
+    <header className="sticky top-0 z-30 flex items-center h-16 border-b border-border bg-background/80 dark:bg-sidebar/80 backdrop-blur-xl px-4 lg:px-6">
       <Button variant="ghost" size="icon" className="lg:hidden mr-2" onClick={() => setMobileOpen(true)}>
         <Menu className="w-5 h-5" />
       </Button>

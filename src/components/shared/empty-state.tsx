@@ -1,6 +1,7 @@
 'use client';
 
 import { type LucideIcon, PackageOpen } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface EmptyStateProps {
   icon?: LucideIcon;
@@ -23,12 +24,9 @@ export function EmptyState({
       <h3 className="text-lg font-semibold text-foreground mb-1">{title}</h3>
       <p className="text-sm text-muted-foreground max-w-sm mb-4">{description}</p>
       {action && (
-        <button
-          onClick={action.onClick}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
-        >
+        <Button onClick={action.onClick} variant="default">
           {action.label}
-        </button>
+        </Button>
       )}
     </div>
   );

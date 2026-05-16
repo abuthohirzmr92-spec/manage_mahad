@@ -9,6 +9,7 @@ import { StatusBadge } from '@/components/shared/status-badge';
 import { AnalyticsCard } from '@/components/shared/analytics-card';
 import { LoadingState } from '@/components/shared/loading-state';
 import { ErrorState } from '@/components/shared/error-state';
+import { DashboardShell } from '@/components/shared/dashboard-shell';
 import type { Santri, Pelanggaran, Quest, Hukuman, Asrama, Notification } from '@/types';
 import type { HealthVisit } from '@/types/health';
 import {
