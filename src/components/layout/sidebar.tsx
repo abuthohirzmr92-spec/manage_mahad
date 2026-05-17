@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { useSidebarStore } from '@/store/sidebar-store';
 import { useAuthStore } from '@/store/auth-store';
 import { getGroupedMenuForRole } from '@/config/navigation';
-import { useCollection } from '@/hooks';
+import { useCollection, useIsRole } from '@/hooks';
 import type { Notification } from '@/types';
 import {
   LayoutDashboard, Users, Building2, BookOpen, AlertTriangle,
@@ -47,9 +47,11 @@ export function Sidebar() {
     setExpandedGroups((prev) => ({ ...prev, [title]: !prev[title] }));
   }, []);
 
+  const isWali = useIsRole('wali');
+
   // Real-time unread notification count
   const { data: allNotifs } = useCollection<Notification>('notifications', [], { realtime: true });
-  const filteredNotifs = user?.role === 'wali' && user?.childSantriId
+  const filteredNotifs = isWali && user?.childSantriId
     ? allNotifs.filter((n) => n.targetSantriId === user.childSantriId)
     : allNotifs;
   const unreadCount = filteredNotifs.filter((n) => !n.read).length;

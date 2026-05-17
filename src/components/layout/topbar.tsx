@@ -5,6 +5,7 @@ import { useSidebarStore } from '@/store/sidebar-store';
 import { useTheme } from 'next-themes';
 import { UserRole } from '@/types';
 import { roleLabels, roleColors } from '@/config/theme';
+import { useIsRole } from '@/hooks';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button, buttonVariants } from '@/components/ui/button';
 import {
@@ -29,8 +30,10 @@ export function Topbar() {
   // Load notifications from Firebase with realtime subscription
   const { data: rawNotifications } = useCollection<Notification>('notifications', [], { realtime: true });
 
+  const isWali = useIsRole('wali');
+
   // Wali only sees their child's notifications
-  const notifications = user?.role === 'wali' && user.childSantriId
+  const notifications = isWali && user?.childSantriId
     ? rawNotifications.filter((n) => n.targetSantriId === user.childSantriId)
     : rawNotifications;
   const unreadCount = notifications.filter((n) => !n.read).length;

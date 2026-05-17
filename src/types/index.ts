@@ -21,6 +21,8 @@ export interface NavItem {
   href: string;
   icon: string;
   roles: UserRole[];
+  /** Centralized permission key from @/config/permissions — preferred over roles array for new pages */
+  requiredPermission?: string;
   badge?: string;
   children?: NavItem[];
   disabled?: boolean;

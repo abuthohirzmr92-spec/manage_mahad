@@ -2,6 +2,7 @@
 
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { getStatusVariant, getStatusLabel } from '@/config/status-labels';
 
 type StatusVariant = 'success' | 'warning' | 'error' | 'info' | 'neutral' | 'purple' | 'fatal';
 
@@ -26,23 +27,13 @@ const dotStyles: Record<StatusVariant, string> = {
   info: 'bg-blue-500', neutral: 'bg-zinc-500', purple: 'bg-purple-500', fatal: 'bg-rose-600',
 };
 
-function detectVariant(status: string): StatusVariant {
-  const lower = status.toLowerCase();
-  if (['sangat_berat'].includes(lower)) return 'fatal';
-  if (['aktif', 'active', 'selesai', 'completed', 'confirmed', 'available', 'baik', 'success'].includes(lower)) return 'success';
-  if (['pending', 'cuti', 'in_progress', 'warning', 'perlu perhatian'].includes(lower)) return 'warning';
-  if (['nonaktif', 'inactive', 'berat', 'rejected', 'dibatalkan', 'expired', 'error', 'peringatan'].includes(lower)) return 'error';
-  if (['info', 'sedang', 'sp1', 'sp2', 'sp3'].includes(lower)) return 'info';
-  if (['ringan'].includes(lower)) return 'purple';
-  return 'neutral';
-}
-
 export function StatusBadge({ status, variant, className }: StatusBadgeProps) {
-  const resolvedVariant = variant || detectVariant(status);
+  const resolvedVariant = variant || getStatusVariant(status);
+  const label = getStatusLabel(status);
   return (
     <Badge variant="outline" className={cn('text-[11px] font-medium px-2 py-0.5 gap-1.5 rounded-md border', variantStyles[resolvedVariant], className)}>
       <span className={cn('w-1.5 h-1.5 rounded-full shrink-0', dotStyles[resolvedVariant])} />
-      {status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, ' ')}
+      {label}
     </Badge>
   );
 }

@@ -7,7 +7,7 @@ import { StatusBadge } from '@/components/shared/status-badge';
 import { LoadingState } from '@/components/shared/loading-state';
 import { ErrorState } from '@/components/shared/error-state';
 import { EmptyState } from '@/components/shared/empty-state';
-import { useCollection } from '@/hooks';
+import { useCollection, useIsRole } from '@/hooks';
 import { useAuthStore } from '@/store/auth-store';
 import { questService, santriService } from '@/lib/firebase/services';
 import { createGovernanceEvent } from '@/lib/governance-events';
@@ -70,9 +70,9 @@ export default function QuestPage() {
   const { data: allQuests, loading, error } = useCollection<Quest>('quest');
 
   // ── RBAC ───────────────────────────────────────────────────────────────────
-  const canCreateQuest = ['admin', 'kepala_kesiswaan', 'musyrif', 'wali_kelas'].includes(user?.role || '');
-  const isGlobalManager = ['admin', 'kepala_kesiswaan'].includes(user?.role || '');
-  const isSantri = user?.role === 'santri';
+  const canCreateQuest = useIsRole(['admin', 'kepala_kesiswaan', 'musyrif', 'wali_kelas']);
+  const isGlobalManager = useIsRole(['admin', 'kepala_kesiswaan']);
+  const isSantri = useIsRole('santri');
 
   // ── Derived data ───────────────────────────────────────────────────────────
   const filteredQuests = useMemo(() => {
